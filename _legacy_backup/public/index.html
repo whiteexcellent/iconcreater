@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kawaii FiveM Theme Icons</title>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* Ekstra stiller */
+    .filters {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 15px;
+    }
+    
+    .control-group {
+      display: flex;
+      align-items: center;
+      background: rgba(255,255,255,0.8);
+      padding: 5px;
+      border-radius: 30px;
+      box-shadow: var(--shadow-soft);
+      border: 2px solid white;
+      backdrop-filter: blur(5px);
+    }
+    
+    .group-label {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      margin-right: 8px;
+      padding-left: 10px;
+    }
+    
+    .toggle-switch {
+      display: flex;
+      gap: 4px;
+    }
+    
+    .v-btn {
+      padding: 8px 14px;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      background: transparent;
+      color: var(--text-secondary);
+      transition: all 0.3s ease;
+    }
+    
+    .v-btn:hover {
+      background: rgba(0,0,0,0.05);
+    }
+    
+    .v-btn.active {
+      background: var(--accent-pink);
+      color: white;
+      box-shadow: 0 4px 10px rgba(255, 158, 170, 0.4);
+    }
+
+    /* Checkbox Style Toggle */
+    .bg-toggle {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      padding-right: 10px;
+    }
+    
+    .bg-checkbox {
+      width: 20px;
+      height: 20px;
+      margin-right: 8px;
+      accent-color: var(--accent-pink);
+      cursor: pointer;
+    }
+    
+    .bg-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    
+    .separator {
+      margin: 0 10px;
+      color: #ddd;
+    }
+    
+    #versionInfo {
+      font-weight: 600;
+      color: var(--accent-pink-dark);
+    }
+
+    /* Background Mode CSS Preview */
+    .icon-wrapper.boxed {
+      background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
+      border-radius: 18px;
+      box-shadow: inset 0 2px 5px rgba(255,255,255,1), 0 4px 10px rgba(0,0,0,0.05);
+      padding: 10px;
+    }
+    
+    .icon-wrapper.boxed img {
+      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+      transform: scale(0.9);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🎀 Kawaii FiveM Theme</h1>
+      <p>Sevimli, pastel ve jöle kıvamında FiveM ikon paketi</p>
+    </header>
+
+    <div class="controls">
+      <div class="search-box">
+        <input type="text" id="searchInput" placeholder="🔍 İkon ara...">
+      </div>
+      
+      <div class="filters">
+        <!-- Versiyon Seçici -->
+        <div class="control-group">
+          <span class="group-label">Versiyon:</span>
+          <div class="toggle-switch">
+            <button class="v-btn" data-version="v1">v1 (Flat)</button>
+            <button class="v-btn active" data-version="v2">v2 (Jelly)</button>
+            <button class="v-btn" data-version="v3">v3 (UwU 🐰)</button>
+            <button class="v-btn" data-version="v4">v4 (Soft ☁️)</button>
+            <button class="v-btn" data-version="v5">v5 (Police 👮)</button>
+            <button class="v-btn" data-version="v6">v6 (Drift 🏎️)</button>
+          </div>
+        </div>
+
+        <!-- Arka Plan Seçici -->
+        <div class="control-group" id="bgControl">
+          <label class="bg-toggle">
+            <input type="checkbox" id="bgCheck" class="bg-checkbox">
+            <span class="bg-label">Kutu Görünümü</span>
+          </label>
+        </div>
+
+        <!-- Tema Seçici -->
+        <div class="theme-toggle">
+          <button class="theme-btn pastel active" data-theme="pastel" title="Pastel Tema">🌸</button>
+          <button class="theme-btn light" data-theme="light" title="Açık Tema">☀️</button>
+          <button class="theme-btn dark" data-theme="dark" title="Koyu Tema">🌙</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats">
+      <span id="iconCount">Yükleniyor...</span>
+      <span class="separator">•</span>
+      <span id="versionInfo">Jelly Pop Versiyon</span>
+    </div>
+
+    <div class="icons-grid" id="iconsGrid"></div>
+  </div>
+
+  <div class="modal" id="modal">
+    <span class="close-modal" id="closeModal">&times;</span>
+    <div class="modal-content">
+      <div class="modal-header">
+        <div id="modalIconWrapper" class="icon-wrapper" style="width: 128px; height: 128px;">
+          <img class="modal-icon" id="modalIcon" src="" alt="" style="width: 100%; height: 100%;">
+        </div>
+      </div>
+      <h2 id="modalTitle"></h2>
+      <p id="modalCategory" class="modal-category"></p>
+      
+      <div class="modal-actions">
+        <button class="btn btn-primary" id="copyBtn">
+          <span class="icon">📋</span> SVG Kopyala
+        </button>
+        <button class="btn btn-secondary" id="downloadBtn">
+          <span class="icon">💾</span> İndir
+        </button>
+      </div>
+      
+      <div class="modal-preview-info">
+        <small style="display:block; margin-top:15px; color:#aaa;">Önizleme (64x64px)</small>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>Made with 💕 for FiveM Community</p>
+  </footer>
+
+  <script src="js/app.js"></script>
+</body>
+</html>

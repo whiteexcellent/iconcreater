@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFF0F5"/>
+      <stop offset="100%" style="stop-color:#FFE4E1"/>
+    </linearGradient>
+  </defs>
+  <rect x="4" y="4" width="56" height="56" rx="20" fill="url(#bgGrad)"/>
+  <text x="50" y="16" font-size="10" fill="#FF69B4">♥</text>
+  <text x="10" y="56" font-size="8" fill="#FF69B4">✦</text>
+  <rect x="20" y="12" width="24" height="44" rx="4" fill="#FFD1DC"/>
+<rect x="28" y="24" width="8" height="20" fill="white"/>
+<rect x="24" y="30" width="16" height="8" fill="white"/>
+</svg>

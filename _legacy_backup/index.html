@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🌸 FiveM Kawaii Icon Engine | Sevimli Pastel İkonlar</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="pastel-theme">
+  <div class="container">
+    <header>
+      <h1>🌸 FiveM Kawaii Icons</h1>
+      <p>Sevimli, pastel ve jöle kıvamında FiveM ikon paketi</p>
+      <div class="version-badge">v1-v5 Kawaii Collection</div>
+    </header>
+
+    <div class="search-section">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput" placeholder="İkon ara...">
+      </div>
+    </div>
+
+    <div class="version-selector">
+      <h3>Versiyon:</h3>
+      <div class="version-buttons">
+        <button class="theme-btn" data-theme="v1">
+          <span class="v-icon">📱</span>
+          <span class="v-name">v1 (Flat)</span>
+        </button>
+        <button class="theme-btn" data-theme="v2">
+          <span class="v-icon">🍬</span>
+          <span class="v-name">v2 (Jelly)</span>
+        </button>
+        <button class="theme-btn active" data-theme="v3">
+          <span class="v-icon">🐰</span>
+          <span class="v-name">v3 (UwU 🐰)</span>
+        </button>
+        <button class="theme-btn" data-theme="v4">
+          <span class="v-icon">☁️</span>
+          <span class="v-name">v4 (Soft ☁️)</span>
+        </button>
+        <button class="theme-btn" data-theme="v5">
+          <span class="v-icon">👮</span>
+          <span class="v-name">v5 (Police 👮)</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="theme-preview">
+      <div class="preview-card">
+        <h2 id="currentThemeName">UwU 🐰</h2>
+        <p id="currentThemeDesc">Sevimli, kawaii tarzı, bebek pembesi</p>
+        <div class="color-palette" id="themeColors">
+          <span class="color-dot" style="background: #FFD1DC"></span>
+          <span class="color-dot" style="background: #FFF0F5"></span>
+          <span class="color-dot" style="background: #FFB6C1"></span>
+          <span class="color-dot" style="background: #FF69B4"></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="view-toggle">
+      <button class="view-toggle-btn active" data-view="grid">🌸 Kutu Görünümü</button>
+      <button class="view-toggle-btn" data-view="list">☰ Liste</button>
+    </div>
+
+    <div class="stats-bar">
+      <span id="iconCount">33 ikon</span>
+      <span class="divider">•</span>
+      <span id="currentThemeDisplay">UwU 🐰 Versiyon</span>
+      <span class="divider">•</span>
+      <span id="favCount">0 favori</span>
+    </div>
+
+    <div class="icons-grid" id="iconsGrid">
+      <!-- Icons will be loaded here -->
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal" id="modal">
+    <div class="modal-content">
+      <span class="close-modal">&times;</span>
+      <div class="modal-icon-wrapper">
+        <img id="modalIcon" src="" alt="">
+      </div>
+      <h2 id="modalTitle"></h2>
+      <p id="modalCategory"></p>
+      <div class="modal-actions">
+        <button class="btn btn-primary" id="copyBtn">📋 SVG Kopyala</button>
+        <button class="btn btn-secondary" id="favBtn">❤️ Favoriye Ekle</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <footer>
+    <p>Made with 💕 for FiveM Community</p>
+  </footer>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
