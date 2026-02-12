@@ -71,9 +71,13 @@ export function dataURLToBlob(dataURL: string): Blob {
   return new Blob([u8arr], { type: mime });
 }
 
+interface NavigatorWithGPU extends Navigator {
+  gpu?: unknown;
+}
+
 export function isWebGPUSupported(): boolean {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return !!(navigator as any).gpu;
+  const nav = navigator as NavigatorWithGPU;
+  return !!nav.gpu;
 }
 
 export function checkBrowserCompatibility(): {
