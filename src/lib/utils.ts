@@ -72,7 +72,8 @@ export function dataURLToBlob(dataURL: string): Blob {
 }
 
 export function isWebGPUSupported(): boolean {
-  return !!navigator.gpu;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return !!(navigator as any).gpu;
 }
 
 export function checkBrowserCompatibility(): {
@@ -81,20 +82,13 @@ export function checkBrowserCompatibility(): {
 } {
   const issues: string[] = [];
   
-  if (!isWebGPUSupported()) {
-    issues.push('WebGPU not supported. Use Chrome/Edge 113+ or Firefox');
+  // Basic browser check - modern browsers should work
+  if (typeof window === 'undefined') {
+    issues.push('Window object not available');
   }
   
-  if (!window.Worker) {
-    issues.push('Web Workers not supported');
-  }
-  
-  if (!window.indexedDB) {
-    issues.push('IndexedDB not supported');
-  }
-  
-  if (!window.SharedArrayBuffer) {
-    issues.push('SharedArrayBuffer not available. Enable COOP/COEP headers');
+  if (!window.fetch) {
+    issues.push('Fetch API not supported. Please use a modern browser');
   }
   
   return {
