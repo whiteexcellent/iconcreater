@@ -8,10 +8,14 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://iconcreater.vercel.app'),
   title: 'FiveM Icon Generator - Browser AI',
   description: 'Generate beautiful SVG icons for FiveM using AI in your browser. No server costs, 100% free.',
   keywords: ['FiveM', 'icon generator', 'AI', 'browser AI', 'SVG', 'GTA5', 'game mods'],
   authors: [{ name: 'FiveM Icon Generator' }],
+  icons: {
+    icon: '/icon.svg',
+  },
   openGraph: {
     title: 'FiveM Icon Generator',
     description: 'AI-powered icon generation in your browser',
