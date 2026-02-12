@@ -1,0 +1,50 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Testing
+coverage/
+
+# Next.js
+.next/
+out/
+dist/
+
+# Production
+build/
+
+# Environment Variables - BU ÇOK ÖNEMLİ!
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# AI Models (büyük dosyalar)
+*.onnx
+*.bin
+*.safetensors
+public/models/
+
+# Debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Misc
+*.log
+.vercel
+
+# Workers (compile edilmiş)
+public/workers/

@@ -1,7 +1,7 @@
 {
-  "name": "fivem-icon-browser-ai",
+  "name": "fivem-icon-generator",
   "version": "3.0.0",
-  "description": "Browser-based AI icon generator for FiveM - No server costs, 100% free",
+  "description": "AI-powered icon generator for FiveM - Secure API-based generation",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -17,12 +17,6 @@
     "typescript": "^5.3.0",
     "zustand": "^4.4.7",
     "immer": "^10.0.3",
-    "onnxruntime-web": "^1.16.3",
-    "@xenova/transformers": "^2.15.0",
-    "potrace": "^2.1.8",
-    "idb": "^8.0.0",
-    "file-saver": "^2.0.5",
-    "jszip": "^3.10.1",
     "framer-motion": "^10.16.0",
     "lucide-react": "^0.294.0",
     "class-variance-authority": "^0.7.0",
@@ -30,14 +24,12 @@
     "tailwind-merge": "^2.2.0",
     "@radix-ui/react-progress": "^1.0.3",
     "@radix-ui/react-slider": "^1.1.2",
-    "@radix-ui/react-tabs": "^1.0.4",
-    "worker-loader": "^3.0.8"
+    "@radix-ui/react-tabs": "^1.0.4"
   },
   "devDependencies": {
     "@types/node": "^20.10.0",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
-    "@types/file-saver": "^2.0.7",
     "autoprefixer": "^10.4.16",
     "postcss": "^8.4.32",
     "tailwindcss": "^3.4.0",
@@ -51,8 +43,7 @@
     "fivem",
     "icon-generator",
     "ai",
-    "browser-ai",
-    "webgpu",
+    "fal-ai",
     "svg",
     "stable-diffusion"
   ],
