@@ -6,16 +6,14 @@ const nextConfig = {
     unoptimized: true,
   },
   webpack: (config, { isServer }) => {
-    // ONNX WebAssembly support
-    config.experiments = {
-      asyncWebAssembly: true,
-      layers: true,
-    };
-
-    // Exclude ONNX from server bundle
-    if (isServer) {
-      config.externals.push('onnxruntime-web');
-    }
+    // Handle WASM files for ONNX Runtime
+    config.module.rules.push({
+      test: /\.wasm$/,
+      type: 'asset/resource',
+      generator: {
+        filename: 'static/wasm/[name][ext]'
+      }
+    });
 
     // Handle worker files
     config.module.rules.push({
@@ -27,25 +25,24 @@ const nextConfig = {
       },
     });
 
+    // Exclude ONNX from server bundle
+    if (isServer) {
+      config.externals.push('onnxruntime-web');
+    }
+
+    // Fix for onnxruntime-web
+    config.resolve.fallback = {
+      ...config.resolve.fallback,
+      fs: false,
+      path: false,
+      crypto: false,
+    };
+
     return config;
   },
-  // Headers for COOP/COEP (required for SharedArrayBuffer)
-  async headers() {
-    return [
-      {
-        source: '/:path*',
-        headers: [
-          {
-            key: 'Cross-Origin-Opener-Policy',
-            value: 'same-origin',
-          },
-          {
-            key: 'Cross-Origin-Embedder-Policy',
-            value: 'require-corp',
-          },
-        ],
-      },
-    ];
+  // Disable webpack cache for clean builds
+  generateBuildId: async () => {
+    return 'build-' + Date.now();
   },
 };
 
