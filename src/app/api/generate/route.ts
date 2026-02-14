@@ -1,6 +1,7 @@
 // src/app/api/generate/route.ts
 // Pollinations.ai - Ücretsiz, API Key Gerektirmez
 // NOT: Görsel URL'si döndürülür, client tarafından yüklenir
+// YENİ: Retry mekanizması eklendi
 
 import { NextRequest, NextResponse } from 'next/server';
 import { PromptBuilder } from '@/lib/utils/prompt-builder';
@@ -33,6 +34,45 @@ function checkRateLimit(ip: string): boolean {
 function getClientIp(req: NextRequest): string {
   const forwarded = req.headers.get('x-forwarded-for');
   return forwarded ? forwarded.split(',')[0].trim() : 'unknown';
+}
+
+// Sleep fonksiyonu
+const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+// Retry ile URL kontrolü
+async function checkUrlWithRetry(imageUrl: string, maxRetries = 3): Promise<boolean> {
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      console.log(`Checking URL attempt ${attempt}/${maxRetries}...`);
+      
+      const response = await fetch(imageUrl, { 
+        method: 'HEAD',
+        signal: AbortSignal.timeout(10000) // 10 saniye timeout
+      });
+      
+      if (response.ok) {
+        console.log(`URL check successful on attempt ${attempt}`);
+        return true;
+      }
+      
+      console.log(`Attempt ${attempt} failed with status: ${response.status}`);
+      
+      if (attempt < maxRetries) {
+        const delay = attempt * 2000; // 2s, 4s, 6s
+        console.log(`Waiting ${delay}ms before retry...`);
+        await sleep(delay);
+      }
+    } catch (error) {
+      console.error(`Attempt ${attempt} error:`, error);
+      
+      if (attempt < maxRetries) {
+        const delay = attempt * 2000;
+        await sleep(delay);
+      }
+    }
+  }
+  
+  return false;
 }
 
 export async function POST(req: NextRequest) {
@@ -81,26 +121,24 @@ export async function POST(req: NextRequest) {
     
     console.log('Image URL:', imageUrl);
 
-    // 6. URL'yi doğrula (HEAD request - hızlı)
-    try {
-      const headResponse = await fetch(imageUrl, { 
-        method: 'HEAD',
-        signal: AbortSignal.timeout(5000) // 5 saniye timeout
-      });
-      
-      if (!headResponse.ok) {
-        console.error('Pollinations HEAD check failed:', headResponse.status);
-        throw new Error('Pollinations service unavailable');
-      }
-    } catch (headError) {
-      console.error('HEAD request error:', headError);
-      // HEAD request başarısız olsa bile devam et, görsel yine de oluşabilir
+    // 6. URL'yi kontrol et (retry ile)
+    const isUrlValid = await checkUrlWithRetry(imageUrl, 3);
+    
+    if (!isUrlValid) {
+      console.error('Pollinations.ai service appears to be down after 3 retries');
+      return NextResponse.json(
+        { 
+          error: 'AI image service is temporarily unavailable. Please try again in 30 seconds or try a different icon/theme.',
+          details: 'The free image generation service (Pollinations.ai) is experiencing high traffic. This is a temporary issue.'
+        },
+        { status: 503 }
+      );
     }
 
     // 7. SVG placeholder oluştur
     const svgData = createSVGFromImage(icon.name, theme.name, theme.previewColor);
 
-    // 8. Başarılı yanıt döndür (URL'yi client'a gönder)
+    // 8. Başarılı yanıt döndür
     return NextResponse.json({
       success: true,
       data: {
@@ -108,7 +146,7 @@ export async function POST(req: NextRequest) {
         iconId,
         themeId,
         prompt,
-        pngData: imageUrl, // Direkt URL döndür
+        pngData: imageUrl,
         svgData,
         timestamp: new Date().toISOString(),
         model: 'Pollinations.ai',
