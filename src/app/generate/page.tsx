@@ -20,7 +20,7 @@ import Link from 'next/link';
 export default function GeneratePage() {
   const [copied, setCopied] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
-  const [selectedModel, setSelectedModel] = useState('flux-schnell');
+  const [retryCount, setRetryCount] = useState(0);
   
   const {
     selectedIcon,
@@ -42,77 +42,87 @@ export default function GeneratePage() {
 
   const { triggerConfetti } = useAnimationStore();
 
-  // Image element'i base64'e çevir
-  const imageToBase64 = (img: HTMLImageElement): string => {
-    const canvas = document.createElement('canvas');
-    canvas.width = img.naturalWidth || 512;
-    canvas.height = img.naturalHeight || 512;
-    const ctx = canvas.getContext('2d');
-    if (ctx) {
-      ctx.drawImage(img, 0, 0);
-      return canvas.toDataURL('image/png');
+  const generateImage = async (): Promise<string> => {
+    const basePrompt = `app icon design, ${selectedIcon?.name}, ${selectedIcon?.description}, ${selectedTheme.style}`;
+    const fullPrompt = customPrompt 
+      ? `${basePrompt}, ${customPrompt}, centered composition, isolated object, white background, professional icon` 
+      : `${basePrompt}, centered composition, isolated object, white background, professional icon`;
+    
+    const encodedPrompt = encodeURIComponent(fullPrompt);
+    const seed = Math.floor(Math.random() * 1000000);
+    
+    // Pollinations.ai - API key yok, direkt URL
+    const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=512&height=512&seed=${seed}&nologo=true&enhance=true`;
+    
+    // Görseli fetch et ve base64'e çevir
+    const response = await fetch(imageUrl);
+    if (!response.ok) {
+      throw new Error(`Failed to generate image: ${response.status}`);
     }
-    return '';
+    
+    const blob = await response.blob();
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
   };
 
   const handleGenerate = async () => {
     if (!canGenerate()) return;
     
     setApiError(null);
+    setRetryCount(0);
     startGeneration();
     
     try {
-      // Puter.js yüklü mü kontrol et
-      if (typeof window === 'undefined' || !window.puter) {
-        throw new Error('Puter.js not loaded. Please refresh the page.');
-      }
-
-      updateProgress(10, 'Connecting to AI...');
-
-      // Prompt oluştur
-      const basePrompt = `app icon design, ${selectedIcon?.name}, ${selectedIcon?.description}, ${selectedTheme.style}`;
-      const fullPrompt = customPrompt 
-        ? `${basePrompt}, ${customPrompt}` 
-        : basePrompt;
+      updateProgress(10, 'Preparing prompt...');
       
-      const finalPrompt = `${fullPrompt}, centered composition, isolated object, white background, clean presentation, vector art style, masterpiece, sharp edges, simple geometric shapes, clean lines, professional, 512x512`;
+      // 3 deneme hakkı
+      let lastError: Error | null = null;
+      for (let attempt = 1; attempt <= 3; attempt++) {
+        try {
+          setRetryCount(attempt);
+          updateProgress(30 + (attempt * 10), attempt > 1 ? `Retrying... (${attempt}/3)` : 'Generating image...');
+          
+          const base64Image = await generateImage();
+          
+          const result = {
+            id: crypto.randomUUID(),
+            iconId: selectedIcon!.id,
+            themeId: selectedTheme.id,
+            prompt: `${selectedIcon?.name} icon, ${selectedTheme.name} theme`,
+            pngData: base64Image,
+            svgData: '',
+            timestamp: new Date().toISOString(),
+            model: 'Pollinations.ai (Free)',
+          };
 
-      updateProgress(30, 'AI is painting...');
-
-      // Puter.js ile görsel üret
-      const imgElement = await window.puter.ai.txt2img(finalPrompt, {
-        model: selectedModel
-      });
-
-      updateProgress(70, 'Processing image...');
-
-      // Base64'e çevir
-      const base64Image = imageToBase64(imgElement);
-
-      if (!base64Image) {
-        throw new Error('Failed to process generated image');
+          updateProgress(100, 'Complete!');
+          setResult(result);
+          triggerConfetti();
+          return; // Başarılı, çık
+          
+        } catch (err) {
+          lastError = err instanceof Error ? err : new Error('Unknown error');
+          console.warn(`Attempt ${attempt} failed:`, lastError.message);
+          
+          if (attempt < 3) {
+            // 2 saniye bekle ve tekrar dene
+            await new Promise(resolve => setTimeout(resolve, 2000));
+          }
+        }
       }
-
-      const result = {
-        id: crypto.randomUUID(),
-        iconId: selectedIcon!.id,
-        themeId: selectedTheme.id,
-        prompt: finalPrompt,
-        pngData: base64Image,
-        svgData: '',
-        timestamp: new Date().toISOString(),
-        model: `Puter.ai (${selectedModel})`,
-      };
-
-      updateProgress(100, 'Complete!');
-      setResult(result);
-      triggerConfetti();
+      
+      // 3 deneme de başarısız oldu
+      throw lastError || new Error('Failed after 3 attempts');
       
     } catch (error) {
       console.error('Generation error:', error);
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       setError(errorMessage);
-      setApiError(errorMessage);
+      setApiError(`${errorMessage}. The free AI service might be busy. Please try again.`);
     }
   };
 
@@ -138,13 +148,6 @@ export default function GeneratePage() {
       }
     }
   };
-
-  const models = [
-    { id: 'flux-schnell', name: 'Flux Schnell (Fast)', description: 'Fast & quality' },
-    { id: 'flux-kontext', name: 'Flux Kontext', description: 'Better context' },
-    { id: 'dall-e-3', name: 'DALL-E 3', description: 'Best quality' },
-    { id: 'gpt-image-1', name: 'GPT Image', description: 'OpenAI' },
-  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
@@ -174,7 +177,7 @@ export default function GeneratePage() {
               </div>
               <div>
                 <h1 className="text-xl font-bold text-slate-100">FiveM Icon Generator</h1>
-                <p className="text-xs text-slate-400">Powered by Puter.ai</p>
+                <p className="text-xs text-slate-400">100% Free - No API Key</p>
               </div>
             </motion.div>
           </Link>
@@ -278,36 +281,6 @@ export default function GeneratePage() {
               </CardContent>
             </Card>
 
-            {/* Model Selection */}
-            <Card className="bg-slate-800/50 border-slate-700">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-slate-100">
-                  <span className="text-2xl">🤖</span>
-                  AI Model
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 gap-3">
-                  {models.map((model) => (
-                    <motion.button
-                      key={model.id}
-                      onClick={() => setSelectedModel(model.id)}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      className={`p-3 rounded-xl border-2 text-left transition-all ${
-                        selectedModel === model.id
-                          ? 'bg-accent-500/20 border-accent-500'
-                          : 'bg-slate-700/50 border-slate-600 hover:border-accent-500/50'
-                      }`}
-                    >
-                      <div className="font-semibold text-slate-200 text-sm">{model.name}</div>
-                      <div className="text-xs text-slate-400">{model.description}</div>
-                    </motion.button>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
             {/* Custom Prompt */}
             <Card className="bg-slate-800/50 border-slate-700">
               <CardHeader>
@@ -339,7 +312,7 @@ export default function GeneratePage() {
               {isGenerating ? (
                 <>
                   <RefreshCcw className="mr-2 h-5 w-5 animate-spin" />
-                  Generating...
+                  {retryCount > 1 ? `Retrying ${retryCount}/3...` : 'Generating...'}
                 </>
               ) : (
                 <>
@@ -379,7 +352,7 @@ export default function GeneratePage() {
                       >
                         <div className="text-6xl mb-4">🎨</div>
                         <p>Select an icon and theme to start</p>
-                        <p className="text-xs mt-2 opacity-60">Powered by Puter.ai</p>
+                        <p className="text-xs mt-2 opacity-60">Free AI by Pollinations.ai</p>
                       </motion.div>
                     )}
 
@@ -434,7 +407,7 @@ export default function GeneratePage() {
                         </div>
 
                         <div className="mt-4 p-3 bg-slate-900 rounded-lg max-w-[300px] w-full">
-                          <p className="text-xs text-slate-500 mb-1">Model:</p>
+                          <p className="text-xs text-slate-500 mb-1">Powered by:</p>
                           <p className="text-xs text-primary-400">{currentResult.model}</p>
                         </div>
                       </motion.div>
