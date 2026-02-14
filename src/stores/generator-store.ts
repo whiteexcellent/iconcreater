@@ -165,8 +165,9 @@ export const useGeneratorStore = create<GeneratorState>()(
         },
         
         canGenerate: () => {
-          const { selectedIcon, isGenerating, modelStatus } = get();
-          return !!selectedIcon && !isGenerating && modelStatus.status === 'ready';
+          const { selectedIcon, isGenerating } = get();
+          // Hugging Face API kullanıyoruz - server-side model her zaman hazır
+          return !!selectedIcon && !isGenerating;
         },
         
         resetAll: () => {
