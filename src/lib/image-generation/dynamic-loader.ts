@@ -11,7 +11,6 @@ export const CDN_MODELS = {
     size: 400,
     priority: 1,
     requires: ['webnn'],
-    // Using demo model from ONNX Runtime examples
     urls: {
       text_encoder: 'https://cdn.jsdelivr.net/gh/microsoft/onnxruntime-web-demo@main/public/stable-diffusion/text_encoder.onnx',
       unet: 'https://cdn.jsdelivr.net/gh/microsoft/onnxruntime-web-demo@main/public/stable-diffusion/unet.onnx',
@@ -24,7 +23,6 @@ export const CDN_MODELS = {
     size: 250,
     priority: 2,
     requires: ['webgpu'],
-    // Using a smaller available ONNX model
     urls: {
       model: 'https://cdn.jsdelivr.net/gh/onnx/models@main/vision/style_transfer/fast_neural_style/model/mosaic-9.onnx'
     }
@@ -36,19 +34,15 @@ export const CDN_MODELS = {
     priority: 3,
     requires: ['wasm'],
     modelId: 'Xenova/stable-diffusion-2-1-base-onnx',
-    // Transformers.js loads automatically from HuggingFace CDN
   }
 };
 
-// Load script dynamically with module support
-export function loadScript(src: string, type: 'classic' | 'module' = 'classic'): Promise<void> {
+// Load script dynamically
+export function loadScript(src: string): Promise<void> {
   return new Promise((resolve, reject) => {
     const script = document.createElement('script');
     script.src = src;
     script.async = true;
-    if (type === 'module') {
-      script.type = 'module';
-    }
     script.onload = () => resolve();
     script.onerror = () => reject(new Error(`Failed to load: ${src}`));
     document.head.appendChild(script);
@@ -75,12 +69,10 @@ export async function checkCDNAvailability(url: string): Promise<boolean> {
 
 // Load ONNX Runtime Web from CDN
 export async function loadONNXRuntime(): Promise<any> {
-  // Check if already loaded globally
   if ((window as any).ort) {
     return (window as any).ort;
   }
   
-  // Try multiple CDN sources
   const sources = [
     'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.17.0/dist/ort.webgpu.min.js',
     'https://unpkg.com/onnxruntime-web@1.17.0/dist/ort.webgpu.min.js',
@@ -95,33 +87,20 @@ export async function loadONNXRuntime(): Promise<any> {
         return (window as any).ort;
       }
     } catch (error) {
-      console.warn(`Failed to load from ${src}:`, error);
+      console.warn(`Failed to load from ${src}`);
     }
   }
   
   throw new Error('Failed to load ONNX Runtime from any CDN');
 }
 
-// Load Transformers.js from CDN - FIXED for module support
+// Load Transformers.js from CDN
 export async function loadTransformers(): Promise<any> {
-  // Check if already loaded globally
   if ((window as any).transformers) {
     return (window as any).transformers;
   }
   
-  // Try ESM import first (modern way)
-  try {
-    const module = await import('https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.0.2/+esm');
-    if (module && (module as any).pipeline) {
-      console.log('✅ Transformers.js loaded via ESM import');
-      (window as any).transformers = module;
-      return module;
-    }
-  } catch (esmError) {
-    console.warn('ESM import failed, trying script tag:', esmError);
-  }
-  
-  // Try script tag with global variable
+  // Try script tag first
   const sources = [
     'https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.0.2/dist/transformers.min.js',
     'https://unpkg.com/@huggingface/transformers@3.0.2/dist/transformers.min.js'
@@ -129,52 +108,25 @@ export async function loadTransformers(): Promise<any> {
   
   for (const src of sources) {
     try {
-      await loadScript(src, 'classic');
-      // Wait a bit for the script to initialize
+      await loadScript(src);
       await new Promise(resolve => setTimeout(resolve, 100));
       
-      if ((window as any).transformers || (window as any).pipeline) {
-        const transformers = (window as any).transformers || { pipeline: (window as any).pipeline };
-        (window as any).transformers = transformers;
-        console.log('✅ Transformers.js loaded from CDN script');
-        return transformers;
+      if ((window as any).transformers) {
+        console.log('✅ Transformers.js loaded from CDN');
+        return (window as any).transformers;
       }
     } catch (error) {
-      console.warn(`Failed to load from ${src}:`, error);
+      console.warn(`Failed to load from ${src}`);
     }
   }
   
-  // Last resort: try to use a stub
-  console.warn('⚠️ All CDN sources failed, using stub implementation');
+  // Return stub if all fail
+  console.warn('⚠️ Using stub Transformers.js');
   const stub = {
-    pipeline: async (task: string, model: string, options?: any) => {
-      console.log(`Stub pipeline: ${task}, ${model}`);
-      return async (prompt: string, opts?: any) => {
-        // Return a placeholder
-        return { 
-          blob: null,
-          data: new Uint8Array(512 * 512 * 4)
-        };
-      };
+    pipeline: async () => {
+      return async () => ({ blob: null });
     }
   };
   (window as any).transformers = stub;
   return stub;
-}
-
-// Get best available CDN
-export async function getBestCDN(): Promise<string | null> {
-  const cdns = [
-    'https://cdn.jsdelivr.net',
-    'https://unpkg.com',
-    'https://cdnjs.cloudflare.com'
-  ];
-  
-  for (const cdn of cdns) {
-    if (await checkCDNAvailability(cdn)) {
-      return cdn;
-    }
-  }
-  
-  return null;
 }
