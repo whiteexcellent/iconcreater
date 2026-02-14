@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
+import Script from 'next/script';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -16,6 +17,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="tr" className="dark">
+      <head>
+        <Script 
+          src="https://js.puter.com/v2/" 
+          strategy="beforeInteractive"
+        />
+      </head>
       <body className={`${inter.className} bg-slate-900 text-slate-100 antialiased`}>
         {children}
       </body>

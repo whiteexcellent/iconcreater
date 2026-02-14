@@ -17,11 +17,21 @@ import { Check, Copy, Download, RefreshCcw, Sparkles, Wand2, AlertCircle } from 
 import Image from 'next/image';
 import Link from 'next/link';
 
+// Puter.js tipi
+declare global {
+  interface Window {
+    puter?: {
+      ai: {
+        txt2img: (prompt: string, options?: { model?: string }) => Promise<HTMLImageElement>;
+      };
+    };
+  }
+}
+
 export default function GeneratePage() {
   const [copied, setCopied] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
-  const [isDemoMode, setIsDemoMode] = useState(false);
-  const [demoMessage, setDemoMessage] = useState<string | null>(null);
+  const [selectedModel, setSelectedModel] = useState('flux-schnell');
   
   const {
     selectedIcon,
@@ -43,50 +53,70 @@ export default function GeneratePage() {
 
   const { triggerConfetti } = useAnimationStore();
 
+  // Image element'i base64'e çevir
+  const imageToBase64 = (img: HTMLImageElement): string => {
+    const canvas = document.createElement('canvas');
+    canvas.width = img.naturalWidth || 512;
+    canvas.height = img.naturalHeight || 512;
+    const ctx = canvas.getContext('2d');
+    if (ctx) {
+      ctx.drawImage(img, 0, 0);
+      return canvas.toDataURL('image/png');
+    }
+    return '';
+  };
+
   const handleGenerate = async () => {
     if (!canGenerate()) return;
     
     setApiError(null);
-    setIsDemoMode(false);
-    setDemoMessage(null);
     startGeneration();
     
     try {
-      updateProgress(10, 'Preparing...');
+      // Puter.js yüklü mü kontrol et
+      if (typeof window === 'undefined' || !window.puter) {
+        throw new Error('Puter.js not loaded. Please refresh the page.');
+      }
+
+      updateProgress(10, 'Connecting to AI...');
+
+      // Prompt oluştur
+      const basePrompt = `app icon design, ${selectedIcon?.name}, ${selectedIcon?.description}, ${selectedTheme.style}`;
+      const fullPrompt = customPrompt 
+        ? `${basePrompt}, ${customPrompt}` 
+        : basePrompt;
       
-      const response = await fetch('/api/generate', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          iconId: selectedIcon?.id,
-          themeId: selectedTheme.id,
-          customPrompt: customPrompt || undefined,
-        }),
+      const finalPrompt = `${fullPrompt}, centered composition, isolated object, white background, clean presentation, vector art style, masterpiece, sharp edges, simple geometric shapes, clean lines, professional, 512x512`;
+
+      updateProgress(30, 'AI is painting...');
+
+      // Puter.js ile görsel üret
+      const imgElement = await window.puter.ai.txt2img(finalPrompt, {
+        model: selectedModel
       });
 
-      updateProgress(50, 'Generating image...');
+      updateProgress(70, 'Processing image...');
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Generation failed');
+      // Base64'e çevir
+      const base64Image = imageToBase64(imgElement);
+
+      if (!base64Image) {
+        throw new Error('Failed to process generated image');
       }
 
-      const result = await response.json();
-      
-      if (!result.success) {
-        throw new Error(result.error || 'Unknown error');
-      }
-
-      // Check if this is demo mode
-      if (result.data.isPlaceholder) {
-        setIsDemoMode(true);
-        setDemoMessage(result.data.message);
-      }
+      const result = {
+        id: crypto.randomUUID(),
+        iconId: selectedIcon!.id,
+        themeId: selectedTheme.id,
+        prompt: finalPrompt,
+        pngData: base64Image,
+        svgData: '',
+        timestamp: new Date().toISOString(),
+        model: `Puter.ai (${selectedModel})`,
+      };
 
       updateProgress(100, 'Complete!');
-      setResult(result.data);
+      setResult(result);
       triggerConfetti();
       
     } catch (error) {
@@ -108,7 +138,6 @@ export default function GeneratePage() {
   const handleDownload = async () => {
     if (currentResult?.pngData) {
       try {
-        // Base64 data URL'den indirme
         const link = document.createElement('a');
         link.href = currentResult.pngData;
         link.download = `fivem-icon-${selectedIcon?.id}-${selectedTheme.id}.png`;
@@ -121,6 +150,13 @@ export default function GeneratePage() {
     }
   };
 
+  const models = [
+    { id: 'flux-schnell', name: 'Flux Schnell (Fast)', description: 'Fast & quality' },
+    { id: 'flux-kontext', name: 'Flux Kontext', description: 'Better context' },
+    { id: 'dall-e-3', name: 'DALL-E 3', description: 'Best quality' },
+    { id: 'gpt-image-1', name: 'GPT Image', description: 'OpenAI' },
+  ];
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
       <FloatingParticles />
@@ -132,22 +168,6 @@ export default function GeneratePage() {
             <AlertCircle className="h-5 w-5" />
             <span className="font-medium">Error:</span>
             <span>{apiError}</span>
-          </div>
-        </div>
-      )}
-
-      {/* Demo Mode Warning */}
-      {isDemoMode && (
-        <div className="bg-yellow-500/20 border-b border-yellow-500/50 px-4 py-3">
-          <div className="max-w-7xl mx-auto">
-            <div className="flex items-start gap-3">
-              <AlertCircle className="h-5 w-5 text-yellow-400 flex-shrink-0 mt-0.5" />
-              <div className="text-yellow-200">
-                <p className="font-semibold mb-1">🎮 Demo Mode Active</p>
-                <p className="text-sm opacity-90">{demoMessage}</p>
-                <p className="text-xs mt-2 opacity-75">To enable real AI image generation, you need to add an API key (Replicate, Stability AI, or OpenAI).</p>
-              </div>
-            </div>
           </div>
         </div>
       )}
@@ -165,7 +185,7 @@ export default function GeneratePage() {
               </div>
               <div>
                 <h1 className="text-xl font-bold text-slate-100">FiveM Icon Generator</h1>
-                <p className="text-xs text-slate-400">AI-powered generation</p>
+                <p className="text-xs text-slate-400">Powered by Puter.ai</p>
               </div>
             </motion.div>
           </Link>
@@ -269,6 +289,36 @@ export default function GeneratePage() {
               </CardContent>
             </Card>
 
+            {/* Model Selection */}
+            <Card className="bg-slate-800/50 border-slate-700">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-slate-100">
+                  <span className="text-2xl">🤖</span>
+                  AI Model
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 gap-3">
+                  {models.map((model) => (
+                    <motion.button
+                      key={model.id}
+                      onClick={() => setSelectedModel(model.id)}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className={`p-3 rounded-xl border-2 text-left transition-all ${
+                        selectedModel === model.id
+                          ? 'bg-accent-500/20 border-accent-500'
+                          : 'bg-slate-700/50 border-slate-600 hover:border-accent-500/50'
+                      }`}
+                    >
+                      <div className="font-semibold text-slate-200 text-sm">{model.name}</div>
+                      <div className="text-xs text-slate-400">{model.description}</div>
+                    </motion.button>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
             {/* Custom Prompt */}
             <Card className="bg-slate-800/50 border-slate-700">
               <CardHeader>
@@ -340,6 +390,7 @@ export default function GeneratePage() {
                       >
                         <div className="text-6xl mb-4">🎨</div>
                         <p>Select an icon and theme to start</p>
+                        <p className="text-xs mt-2 opacity-60">Powered by Puter.ai</p>
                       </motion.div>
                     )}
 
