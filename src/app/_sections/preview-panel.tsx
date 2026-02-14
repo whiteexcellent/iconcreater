@@ -18,13 +18,27 @@ export function PreviewPanel() {
     currentResult
   } = useGeneratorStore();
 
-  const handleDownload = () => {
-    if (currentResult?.svgData) {
-      downloadFile(
-        currentResult.svgData,
-        `fivem-icon-${selectedIcon?.id}-${selectedTheme.id}.svg`,
-        'image/svg+xml'
-      );
+  const handleDownload = async () => {
+    if (currentResult?.pngData) {
+      try {
+        // URL'den görseli indir
+        const response = await fetch(currentResult.pngData);
+        const blob = await response.blob();
+        
+        // İndirme linki oluştur
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `fivem-icon-${selectedIcon?.id}-${selectedTheme.id}.png`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      } catch (error) {
+        console.error('Download failed:', error);
+        // Hata durumunda URL'yi yeni sekmede aç
+        window.open(currentResult.pngData, '_blank');
+      }
     }
   };
 
@@ -69,10 +83,21 @@ export function PreviewPanel() {
 
           {currentResult && !isGenerating && (
             <div className="w-full h-full flex items-center justify-center p-4">
-              <div
-                className="w-full h-full max-w-[300px] max-h-[300px]"
-                dangerouslySetInnerHTML={{ __html: currentResult.svgData }}
-              />
+              {currentResult.pngData.startsWith('http') ? (
+                // URL olarak gelen görsel
+                <img 
+                  src={currentResult.pngData} 
+                  alt="Generated icon"
+                  className="w-full h-full max-w-[300px] max-h-[300px] object-contain rounded-lg"
+                />
+              ) : (
+                // Base64 olarak gelen görsel
+                <img 
+                  src={currentResult.pngData} 
+                  alt="Generated icon"
+                  className="w-full h-full max-w-[300px] max-h-[300px] object-contain rounded-lg"
+                />
+              )}
             </div>
           )}
         </div>
@@ -87,10 +112,18 @@ export function PreviewPanel() {
             <div className="grid grid-cols-2 gap-2">
               <Button onClick={handleDownload} className="w-full">
                 <Download className="h-4 w-4 mr-2" />
-                Download SVG
+                Download PNG
               </Button>
-              <Button variant="outline" className="w-full">
-                Copy to Clipboard
+              <Button 
+                variant="outline" 
+                className="w-full"
+                onClick={() => {
+                  if (currentResult?.pngData) {
+                    navigator.clipboard.writeText(currentResult.pngData);
+                  }
+                }}
+              >
+                Copy URL
               </Button>
             </div>
 

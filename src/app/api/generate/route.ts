@@ -1,5 +1,6 @@
 // src/app/api/generate/route.ts
-// Pollinations.ai - Ücretsiz, API Key Gerektirmez, Anında Görsel
+// Pollinations.ai - Ücretsiz, API Key Gerektirmez
+// NOT: Görsel URL'si döndürülür, client tarafından yüklenir
 
 import { NextRequest, NextResponse } from 'next/server';
 import { PromptBuilder } from '@/lib/utils/prompt-builder';
@@ -11,7 +12,7 @@ const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
 
 function checkRateLimit(ip: string): boolean {
   const now = Date.now();
-  const windowMs = 60 * 1000; // 1 dakika
+  const windowMs = 60 * 1000;
   const maxRequests = parseInt(process.env.RATE_LIMIT_REQUESTS_PER_MINUTE || '10');
   
   const current = rateLimitMap.get(ip);
@@ -71,37 +72,35 @@ export async function POST(req: NextRequest) {
     const prompt = PromptBuilder.buildPrompt(icon, theme, customPrompt);
     const seed = Math.floor(Math.random() * 1000000);
     
-    console.log('Generating image with prompt:', prompt);
+    console.log('Generating image for:', icon.name, '| Theme:', theme.name);
+    console.log('Prompt:', prompt);
 
-    // 5. Pollinations.ai API'den görsel URL'si oluştur
-    // URL format: https://image.pollinations.ai/prompt/{prompt}?width=512&height=512&seed={seed}&nologo=true
+    // 5. Pollinations.ai URL oluştur
     const encodedPrompt = encodeURIComponent(prompt);
-    const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=512&height=512&seed=${seed}&nologo=true&enhance=true`;
+    const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=512&height=512&seed=${seed}&nologo=true`;
     
-    console.log('Generated image URL:', imageUrl);
+    console.log('Image URL:', imageUrl);
 
-    // 6. Görseli indir
-    const imageResponse = await fetch(imageUrl);
-    
-    if (!imageResponse.ok) {
-      console.error('Pollinations API error:', imageResponse.status);
-      return NextResponse.json(
-        { error: 'Image generation failed' },
-        { status: 502 }
-      );
+    // 6. URL'yi doğrula (HEAD request - hızlı)
+    try {
+      const headResponse = await fetch(imageUrl, { 
+        method: 'HEAD',
+        signal: AbortSignal.timeout(5000) // 5 saniye timeout
+      });
+      
+      if (!headResponse.ok) {
+        console.error('Pollinations HEAD check failed:', headResponse.status);
+        throw new Error('Pollinations service unavailable');
+      }
+    } catch (headError) {
+      console.error('HEAD request error:', headError);
+      // HEAD request başarısız olsa bile devam et, görsel yine de oluşabilir
     }
 
-    // 7. Görseli base64'e çevir
-    const imageBuffer = await imageResponse.arrayBuffer();
-    const base64Image = Buffer.from(imageBuffer).toString('base64');
-    const dataUrl = `data:image/png;base64,${base64Image}`;
-
-    console.log('Image downloaded successfully, size:', imageBuffer.byteLength);
-
-    // 8. SVG placeholder oluştur
+    // 7. SVG placeholder oluştur
     const svgData = createSVGFromImage(icon.name, theme.name, theme.previewColor);
 
-    // 9. Başarılı yanıt döndür
+    // 8. Başarılı yanıt döndür (URL'yi client'a gönder)
     return NextResponse.json({
       success: true,
       data: {
@@ -109,7 +108,7 @@ export async function POST(req: NextRequest) {
         iconId,
         themeId,
         prompt,
-        pngData: dataUrl,
+        pngData: imageUrl, // Direkt URL döndür
         svgData,
         timestamp: new Date().toISOString(),
         model: 'Pollinations.ai',
@@ -119,7 +118,7 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     console.error('Generate API error:', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: error instanceof Error ? error.message : 'Internal server error' },
       { status: 500 }
     );
   }
@@ -139,7 +138,7 @@ function createSVGFromImage(iconName: string, themeName: string, color: string):
 export async function OPTIONS() {
   return NextResponse.json({}, {
     headers: {
-      'Access-Control-Allow-Origin': process.env.ALLOWED_ORIGINS || '*',
+      'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Methods': 'POST, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type',
     },
