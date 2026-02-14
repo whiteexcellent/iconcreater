@@ -13,12 +13,17 @@ import { ConfettiButton } from '@/components/funny/confetti-button';
 import { FunnyLoader } from '@/components/funny/funny-loader';
 import { FloatingParticles } from '@/components/funny/floating-particles';
 import { fadeInUp, staggerContainer, staggerItem, funnyWiggle } from '@/lib/animations';
-import { Check, Copy, Download, RefreshCcw, Sparkles, Wand2 } from 'lucide-react';
+import { Check, Copy, Download, RefreshCcw, Sparkles, Wand2, AlertCircle } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 
+// REPLICATE API CONFIGURATION
+// Get your free token from: https://replicate.com/account/api-tokens
+const REPLICATE_API_TOKEN = process.env.NEXT_PUBLIC_REPLICATE_API_TOKEN || '';
+
 export default function GeneratePage() {
   const [copied, setCopied] = useState(false);
+  const [apiError, setApiError] = useState<string | null>(null);
   
   const {
     selectedIcon,
@@ -40,29 +45,86 @@ export default function GeneratePage() {
 
   const { triggerConfetti } = useAnimationStore();
 
+  const generateWithReplicate = async (prompt: string): Promise<string> => {
+    // Step 1: Create prediction
+    const response = await fetch('https://api.replicate.com/v1/predictions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Token ${REPLICATE_API_TOKEN}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        version: "black-forest-labs/flux-schnell",
+        input: {
+          prompt,
+          width: 512,
+          height: 512,
+          num_outputs: 1,
+          aspect_ratio: "1:1",
+          output_format: "png",
+          guidance_scale: 3.5,
+          num_inference_steps: 4,
+        }
+      })
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.detail || 'Failed to start generation');
+    }
+
+    const prediction = await response.json();
+    
+    // Step 2: Poll for result
+    let result = prediction;
+    let attempts = 0;
+    const maxAttempts = 60; // 60 seconds max
+    
+    while (result.status !== 'succeeded' && result.status !== 'failed' && attempts < maxAttempts) {
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      const pollResponse = await fetch(result.urls.get, {
+        headers: {
+          'Authorization': `Token ${REPLICATE_API_TOKEN}`,
+        }
+      });
+      
+      result = await pollResponse.json();
+      attempts++;
+      
+      // Update progress
+      const progressPercent = Math.min((attempts / 10) * 100, 95);
+      updateProgress(progressPercent, result.status === 'processing' ? 'AI is painting...' : 'Waiting in queue...');
+    }
+
+    if (result.status === 'failed') {
+      throw new Error(result.error || 'Generation failed');
+    }
+
+    if (!result.output || !result.output[0]) {
+      throw new Error('No image generated');
+    }
+
+    return result.output[0];
+  };
+
   const handleGenerate = async () => {
     if (!canGenerate()) return;
     
+    if (!REPLICATE_API_TOKEN) {
+      setApiError('Please add your Replicate API token to .env.local file. Get it from replicate.com/account/api-tokens');
+      return;
+    }
+
+    setApiError(null);
     startGeneration();
     
     try {
-      const steps = [
-        { progress: 10, message: 'Analyzing prompt...', delay: 500 },
-        { progress: 30, message: 'Generating image...', delay: 2000 },
-        { progress: 60, message: 'Processing...', delay: 1500 },
-        { progress: 80, message: 'Finalizing...', delay: 1000 },
-        { progress: 100, message: 'Complete!', delay: 500 }
-      ];
-
-      for (const step of steps) {
-        await new Promise(resolve => setTimeout(resolve, step.delay));
-        updateProgress(step.progress, step.message);
-      }
-
-      const prompt = `app icon design, ${selectedIcon?.name}, ${selectedTheme.style}`;
-      const encodedPrompt = encodeURIComponent(prompt);
-      const seed = Math.floor(Math.random() * 1000000);
-      const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=512&height=512&seed=${seed}&nologo=true`;
+      updateProgress(5, 'Connecting to AI...');
+      
+      const prompt = `app icon design, ${selectedIcon?.name} icon, ${selectedIcon?.description}, ${selectedTheme.style}, centered composition, isolated object, white background, clean presentation, vector art style, masterpiece, sharp edges, simple geometric shapes, clean lines, professional, ${customPrompt || ''}`;
+      
+      const imageUrl = await generateWithReplicate(prompt);
 
       const result = {
         id: crypto.randomUUID(),
@@ -72,14 +134,17 @@ export default function GeneratePage() {
         pngData: imageUrl,
         svgData: '<svg></svg>',
         timestamp: new Date().toISOString(),
-        model: 'Pollinations.ai'
+        model: 'Replicate (Flux Schnell)'
       };
 
       setResult(result);
       triggerConfetti();
       
     } catch (error) {
-      setError('Generation failed. Please try again.');
+      console.error('Generation error:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      setError(errorMessage);
+      setApiError(errorMessage);
     }
   };
 
@@ -114,6 +179,31 @@ export default function GeneratePage() {
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
       <FloatingParticles />
       
+      {/* API Key Warning */}
+      {!REPLICATE_API_TOKEN && (
+        <div className="bg-yellow-500/20 border-b border-yellow-500/50 px-4 py-3">
+          <div className="max-w-7xl mx-auto flex items-center gap-2 text-yellow-400">
+            <AlertCircle className="h-5 w-5" />
+            <span className="font-medium">API Key Required:</span>
+            <span>Add NEXT_PUBLIC_REPLICATE_API_TOKEN to your .env.local file. Get free token from </span>
+            <a href="https://replicate.com/account/api-tokens" target="_blank" rel="noopener noreferrer" className="underline hover:text-yellow-300">
+              replicate.com
+            </a>
+          </div>
+        </div>
+      )}
+
+      {/* API Error */}
+      {apiError && (
+        <div className="bg-red-500/20 border-b border-red-500/50 px-4 py-3">
+          <div className="max-w-7xl mx-auto flex items-center gap-2 text-red-400">
+            <AlertCircle className="h-5 w-5" />
+            <span className="font-medium">Error:</span>
+            <span>{apiError}</span>
+          </div>
+        </div>
+      )}
+      
       {/* Header */}
       <header className="border-b border-slate-700/50 bg-slate-900/80 backdrop-blur-xl sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
@@ -127,7 +217,7 @@ export default function GeneratePage() {
               </div>
               <div>
                 <h1 className="text-xl font-bold text-slate-100">FiveM Icon Generator</h1>
-                <p className="text-xs text-slate-400">AI-powered generation</p>
+                <p className="text-xs text-slate-400">Powered by Replicate AI</p>
               </div>
             </motion.div>
           </Link>
@@ -257,7 +347,7 @@ export default function GeneratePage() {
             {/* Generate Button */}
             <ConfettiButton
               onClick={handleGenerate}
-              disabled={!canGenerate()}
+              disabled={!canGenerate() || !REPLICATE_API_TOKEN}
             >
               {isGenerating ? (
                 <>
