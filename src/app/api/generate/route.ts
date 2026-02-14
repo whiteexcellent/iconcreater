@@ -70,9 +70,9 @@ export async function POST(req: NextRequest) {
     const encodedPrompt = encodeURIComponent(prompt);
     const seed = Math.floor(Math.random() * 1000000);
     
-    // Hugging Face Inference API
+    // Hugging Face Inference API (Yeni Router URL)
     // Model: stabilityai/stable-diffusion-xl-base-1.0
-    const hfApiUrl = `https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0`;
+    const hfApiUrl = `https://router.huggingface.co/hf-inference/models/stabilityai/stable-diffusion-xl-base-1.0`;
     
     console.log('Generating image for:', icon.name, '| Theme:', theme.name);
 
