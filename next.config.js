@@ -4,21 +4,19 @@ const nextConfig = {
     unoptimized: true,
   },
   webpack: (config, { isServer }) => {
-    // Exclude onnxruntime-node completely
+    // Exclude heavy node modules from client bundle
     if (!isServer) {
-      config.resolve.alias = {
-        ...config.resolve.alias,
-        'onnxruntime-node': false,
-        'onnxruntime-web': false, // We'll load from CDN
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        net: false,
+        tls: false,
+        crypto: false,
       };
-      
-      config.externals.push('onnxruntime-node');
-      config.externals.push('@huggingface/transformers');
     }
     
     return config;
   },
-  transpilePackages: [],
   experimental: {
     esmExternals: 'loose',
   },
