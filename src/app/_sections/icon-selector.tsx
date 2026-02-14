@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { useGeneratorStore } from '@/stores/generator-store';
-import { ICONS, getCategories } from '@/data/icons';
+import { icons, getCategories } from '@/data/icons';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { Search } from 'lucide-react';
@@ -16,7 +16,7 @@ export function IconSelector() {
   const categories = useMemo(() => getCategories(), []);
   
   const filteredIcons = useMemo(() => {
-    return ICONS.filter((icon) => {
+    return icons.filter((icon) => {
       const matchesCategory = activeCategory === 'all' || icon.category === activeCategory;
       const matchesSearch = icon.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                            icon.id.toLowerCase().includes(searchQuery.toLowerCase());

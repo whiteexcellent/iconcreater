@@ -1,7 +1,7 @@
 "use client";
 
 import { useGeneratorStore } from '@/stores/generator-store';
-import { THEMES } from '@/data/themes';
+import { themes } from '@/data/themes';
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { Sparkles, Zap, Minimize, Lightbulb, CassetteTape } from 'lucide-react';
@@ -19,7 +19,7 @@ export function ThemeGallery() {
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-      {THEMES.map((theme) => (
+      {themes.map((theme) => (
         <Card
           key={theme.id}
           onClick={() => setSelectedTheme(theme)}
