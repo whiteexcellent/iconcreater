@@ -20,6 +20,8 @@ import Link from 'next/link';
 export default function GeneratePage() {
   const [copied, setCopied] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
+  const [isDemoMode, setIsDemoMode] = useState(false);
+  const [demoMessage, setDemoMessage] = useState<string | null>(null);
   
   const {
     selectedIcon,
@@ -45,6 +47,8 @@ export default function GeneratePage() {
     if (!canGenerate()) return;
     
     setApiError(null);
+    setIsDemoMode(false);
+    setDemoMessage(null);
     startGeneration();
     
     try {
@@ -73,6 +77,12 @@ export default function GeneratePage() {
       
       if (!result.success) {
         throw new Error(result.error || 'Unknown error');
+      }
+
+      // Check if this is demo mode
+      if (result.data.isPlaceholder) {
+        setIsDemoMode(true);
+        setDemoMessage(result.data.message);
       }
 
       updateProgress(100, 'Complete!');
@@ -122,6 +132,22 @@ export default function GeneratePage() {
             <AlertCircle className="h-5 w-5" />
             <span className="font-medium">Error:</span>
             <span>{apiError}</span>
+          </div>
+        </div>
+      )}
+
+      {/* Demo Mode Warning */}
+      {isDemoMode && (
+        <div className="bg-yellow-500/20 border-b border-yellow-500/50 px-4 py-3">
+          <div className="max-w-7xl mx-auto">
+            <div className="flex items-start gap-3">
+              <AlertCircle className="h-5 w-5 text-yellow-400 flex-shrink-0 mt-0.5" />
+              <div className="text-yellow-200">
+                <p className="font-semibold mb-1">🎮 Demo Mode Active</p>
+                <p className="text-sm opacity-90">{demoMessage}</p>
+                <p className="text-xs mt-2 opacity-75">To enable real AI image generation, you need to add an API key (Replicate, Stability AI, or OpenAI).</p>
+              </div>
+            </div>
           </div>
         </div>
       )}

@@ -1,18 +1,22 @@
 // src/app/api/generate/route.ts
-// Hugging Face Inference API - Ücretsiz Tier (Günlük limit var ama deneme için yeterli)
+// MOCK API - Demo görsel üretimi (API çalışmayınca kullanılır)
+// Kullanıcı kendi API token'ını ekleyince gerçek API'ye geçilebilir
 
 import { NextRequest, NextResponse } from 'next/server';
 import { PromptBuilder } from '@/lib/utils/prompt-builder';
 import { getThemeById } from '@/data/themes';
 import { getIconById } from '@/data/icons';
 
+// Gerçek API kullanılsın mı?
+const USE_REAL_API = false; // Şimdilik mock kullanıyoruz
+
 // Rate limiting
 const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
 
 function checkRateLimit(ip: string): boolean {
   const now = Date.now();
-  const windowMs = 60 * 60 * 1000; // 1 saat
-  const maxRequests = 5; // Saatte 5 görsel (ücretsiz tier için güvenli)
+  const windowMs = 60 * 60 * 1000;
+  const maxRequests = 50;
   
   const current = rateLimitMap.get(ip);
   
@@ -34,13 +38,73 @@ function getClientIp(req: NextRequest): string {
   return forwarded ? forwarded.split(',')[0].trim() : 'unknown';
 }
 
+// Basit placeholder SVG oluşturucu
+function createPlaceholderSVG(iconName: string, themeName: string, themeColor: string): string {
+  // Farklı şekiller için farklı SVG'ler
+  const shapes = [
+    // Circle
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+      <defs>
+        <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:${themeColor};stop-opacity:1" />
+          <stop offset="100%" style="stop-color:${adjustColor(themeColor, -40)};stop-opacity:1" />
+        </linearGradient>
+      </defs>
+      <rect width="512" height="512" fill="url(#grad1)" rx="64"/>
+      <circle cx="256" cy="200" r="100" fill="white" opacity="0.9"/>
+      <text x="256" y="380" font-family="Arial, sans-serif" font-size="48" fill="white" text-anchor="middle" font-weight="bold">${iconName}</text>
+      <text x="256" y="440" font-family="Arial, sans-serif" font-size="24" fill="white" text-anchor="middle" opacity="0.8">${themeName}</text>
+    </svg>`,
+    // Square
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+      <defs>
+        <linearGradient id="grad2" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:${themeColor};stop-opacity:1" />
+          <stop offset="100%" style="stop-color:${adjustColor(themeColor, -40)};stop-opacity:1" />
+        </linearGradient>
+      </defs>
+      <rect width="512" height="512" fill="url(#grad2)" rx="32"/>
+      <rect x="106" y="106" width="300" height="200" fill="white" opacity="0.9" rx="16"/>
+      <text x="256" y="380" font-family="Arial, sans-serif" font-size="48" fill="white" text-anchor="middle" font-weight="bold">${iconName}</text>
+      <text x="256" y="440" font-family="Arial, sans-serif" font-size="24" fill="white" text-anchor="middle" opacity="0.8">${themeName}</text>
+    </svg>`,
+    // Hexagon
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+      <defs>
+        <linearGradient id="grad3" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:${themeColor};stop-opacity:1" />
+          <stop offset="100%" style="stop-color:${adjustColor(themeColor, -40)};stop-opacity:1" />
+        </linearGradient>
+      </defs>
+      <rect width="512" height="512" fill="url(#grad3)" rx="64"/>
+      <polygon points="256,100 356,175 356,275 256,350 156,275 156,175" fill="white" opacity="0.9"/>
+      <text x="256" y="420" font-family="Arial, sans-serif" font-size="40" fill="white" text-anchor="middle" font-weight="bold">${iconName}</text>
+    </svg>`
+  ];
+  
+  // Rastgele şekil seç
+  const randomShape = shapes[Math.floor(Math.random() * shapes.length)];
+  
+  // SVG'yi base64'e çevir
+  return `data:image/svg+xml;base64,${Buffer.from(randomShape).toString('base64')}`;
+}
+
+// Renk ayarlama yardımcı fonksiyon
+function adjustColor(color: string, amount: number): string {
+  const num = parseInt(color.replace('#', ''), 16);
+  const r = Math.max(0, Math.min(255, (num >> 16) + amount));
+  const g = Math.max(0, Math.min(255, ((num >> 8) & 0x00FF) + amount));
+  const b = Math.max(0, Math.min(255, (num & 0x0000FF) + amount));
+  return `#${((r << 16) | (g << 8) | b).toString(16).padStart(6, '0')}`;
+}
+
 export async function POST(req: NextRequest) {
   try {
     // Rate limit kontrolü
     const clientIp = getClientIp(req);
     if (!checkRateLimit(clientIp)) {
       return NextResponse.json(
-        { error: 'Rate limit exceeded. Max 5 images per hour.' },
+        { error: 'Rate limit exceeded. Please try again later.' },
         { status: 429 }
       );
     }
@@ -65,75 +129,15 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Prompt oluştur
+    // Prompt oluştur (log için)
     const prompt = PromptBuilder.buildPrompt(icon, theme, customPrompt);
-    const encodedPrompt = encodeURIComponent(prompt);
-    const seed = Math.floor(Math.random() * 1000000);
+    console.log('Generating placeholder for:', icon.name, '| Theme:', theme.name);
+
+    // MOCK: Placeholder SVG oluştur
+    // 2 saniye gecikme ekleyelim (gerçek API gibi hissettirsin)
+    await new Promise(resolve => setTimeout(resolve, 2000));
     
-    // Hugging Face Inference API (Yeni Router URL)
-    // Model: stabilityai/stable-diffusion-xl-base-1.0
-    const hfApiUrl = `https://router.huggingface.co/hf-inference/models/stabilityai/stable-diffusion-xl-base-1.0`;
-    
-    console.log('Generating image for:', icon.name, '| Theme:', theme.name);
-
-    const hfResponse = await fetch(hfApiUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        // Ücretsiz tier - API key gerekmez (rate limited)
-        // Eğer 402 hatası alırsanız, token oluşturmanız gerekir
-      },
-      body: JSON.stringify({
-        inputs: prompt,
-        parameters: {
-          negative_prompt: theme.negative,
-          width: 512,
-          height: 512,
-          seed: seed,
-          num_inference_steps: 20,
-          guidance_scale: 7.5,
-        }
-      }),
-    });
-
-    if (!hfResponse.ok) {
-      const errorText = await hfResponse.text();
-      console.error('HF API error:', hfResponse.status, errorText);
-      
-      if (hfResponse.status === 402 || hfResponse.status === 403) {
-        // Limit aşıldı veya ücretli hesap gerekli
-        return NextResponse.json(
-          { 
-            error: 'Hugging Face free tier limit reached. Please try again later or create a free account.',
-            details: 'Free tier allows limited requests per day.'
-          },
-          { status: 503 }
-        );
-      }
-      
-      if (hfResponse.status === 503) {
-        // Model loading
-        return NextResponse.json(
-          { 
-            error: 'Model is loading, please try again in 30 seconds',
-            details: 'First request wakes up the model'
-          },
-          { status: 503 }
-        );
-      }
-      
-      return NextResponse.json(
-        { error: `Image generation failed: ${errorText}` },
-        { status: 502 }
-      );
-    }
-
-    // Hugging Face binary görsel döndürür
-    const imageBuffer = await hfResponse.arrayBuffer();
-    const base64Image = Buffer.from(imageBuffer).toString('base64');
-    const dataUrl = `data:image/png;base64,${base64Image}`;
-
-    console.log('Image generated successfully');
+    const placeholderUrl = createPlaceholderSVG(icon.name, theme.name, theme.previewColor);
 
     return NextResponse.json({
       success: true,
@@ -142,10 +146,12 @@ export async function POST(req: NextRequest) {
         iconId,
         themeId,
         prompt,
-        pngData: dataUrl,
-        svgData: '',
+        pngData: placeholderUrl,
+        svgData: placeholderUrl,
         timestamp: new Date().toISOString(),
-        model: 'Hugging Face (SDXL)',
+        model: 'Demo Mode (Placeholder)',
+        isPlaceholder: true,
+        message: 'This is a demo placeholder. Connect a real AI API for actual image generation.'
       }
     });
 
