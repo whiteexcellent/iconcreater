@@ -16,7 +16,6 @@ export function PreviewPanel() {
     selectedIcon,
     selectedTheme,
     isGenerating,
-    generationStage,
     progress,
     stageMessage,
     currentResult
@@ -29,17 +28,6 @@ export function PreviewPanel() {
       } catch (error) {
         console.error('Download failed:', error);
       }
-    }
-  };
-
-  const getStageColor = () => {
-    switch (generationStage) {
-      case 'complete':
-        return 'text-green-500';
-      case 'error':
-        return 'text-red-500';
-      default:
-        return 'text-primary';
     }
   };
 
@@ -70,7 +58,7 @@ export function PreviewPanel() {
             <div className="w-full max-w-xs space-y-4">
               <div className="text-center space-y-2">
                 <RefreshCw className="h-8 w-8 mx-auto animate-spin text-primary" />
-                <p className={cn("font-medium", getStageColor())}>
+                <p className="font-medium text-primary-400">
                   {stageMessage}
                 </p>
               </div>
