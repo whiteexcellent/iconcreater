@@ -1,123 +1,177 @@
 import { Icon } from '@/types';
 
-export const ICONS: Icon[] = [
+export const icons: Icon[] = [
   {
     id: 'camera',
     name: 'Camera',
+    emoji: '📷',
     category: 'media',
-    baseShape: 'camera.svg',
-    description: 'Photography and camera app'
-  },
-  {
-    id: 'bank',
-    name: 'Bank',
-    category: 'finance',
-    baseShape: 'bank.svg',
-    description: 'Banking and financial services'
-  },
-  {
-    id: 'car',
-    name: 'Vehicle',
-    category: 'transport',
-    baseShape: 'car.svg',
-    description: 'Garage and vehicle management'
-  },
-  {
-    id: 'phone',
-    name: 'Phone',
-    category: 'communication',
-    baseShape: 'phone.svg',
-    description: 'Phone and contacts'
-  },
-  {
-    id: 'message',
-    name: 'Messages',
-    category: 'communication',
-    baseShape: 'message.svg',
-    description: 'SMS and messaging'
-  },
-  {
-    id: 'map',
-    name: 'Maps',
-    category: 'navigation',
-    baseShape: 'map.svg',
-    description: 'GPS and navigation'
-  },
-  {
-    id: 'settings',
-    name: 'Settings',
-    category: 'system',
-    baseShape: 'settings.svg',
-    description: 'System settings and configuration'
+    baseShape: 'circle',
+    description: 'Photo and video capture'
   },
   {
     id: 'gallery',
     name: 'Gallery',
+    emoji: '🖼️',
     category: 'media',
-    baseShape: 'gallery.svg',
-    description: 'Photo gallery and albums'
+    baseShape: 'square',
+    description: 'Image gallery and album'
   },
   {
     id: 'music',
     name: 'Music',
+    emoji: '🎵',
     category: 'media',
-    baseShape: 'music.svg',
-    description: 'Music player and library'
+    baseShape: 'circle',
+    description: 'Audio and music player'
   },
   {
-    id: 'weather',
-    name: 'Weather',
-    category: 'utility',
-    baseShape: 'weather.svg',
-    description: 'Weather forecast'
+    id: 'phone',
+    name: 'Phone',
+    emoji: '📱',
+    category: 'communication',
+    baseShape: 'rounded',
+    description: 'Phone and communication'
+  },
+  {
+    id: 'message',
+    name: 'Messages',
+    emoji: '💬',
+    category: 'communication',
+    baseShape: 'rounded',
+    description: 'Chat and messaging'
+  },
+  {
+    id: 'mail',
+    name: 'Email',
+    emoji: '✉️',
+    category: 'communication',
+    baseShape: 'rounded',
+    description: 'Email and inbox'
+  },
+  {
+    id: 'bank',
+    name: 'Bank',
+    emoji: '🏦',
+    category: 'finance',
+    baseShape: 'rounded',
+    description: 'Banking and finance'
   },
   {
     id: 'wallet',
     name: 'Wallet',
+    emoji: '👛',
     category: 'finance',
-    baseShape: 'wallet.svg',
-    description: 'Digital wallet and payments'
+    baseShape: 'rounded',
+    description: 'Payments and wallet'
   },
   {
-    id: 'house',
-    name: 'Real Estate',
-    category: 'real_estate',
-    baseShape: 'house.svg',
-    description: 'Property and real estate'
+    id: 'chart',
+    name: 'Analytics',
+    emoji: '📊',
+    category: 'finance',
+    baseShape: 'square',
+    description: 'Charts and analytics'
+  },
+  {
+    id: 'map',
+    name: 'Maps',
+    emoji: '🗺️',
+    category: 'navigation',
+    baseShape: 'rounded',
+    description: 'Maps and navigation'
+  },
+  {
+    id: 'compass',
+    name: 'Compass',
+    emoji: '🧭',
+    category: 'navigation',
+    baseShape: 'circle',
+    description: 'Directions and compass'
+  },
+  {
+    id: 'settings',
+    name: 'Settings',
+    emoji: '⚙️',
+    category: 'system',
+    baseShape: 'rounded',
+    description: 'Settings and configuration'
+  },
+  {
+    id: 'user',
+    name: 'Profile',
+    emoji: '👤',
+    category: 'system',
+    baseShape: 'circle',
+    description: 'User profile and account'
+  },
+  {
+    id: 'home',
+    name: 'Home',
+    emoji: '🏠',
+    category: 'system',
+    baseShape: 'rounded',
+    description: 'Home and dashboard'
+  },
+  {
+    id: 'car',
+    name: 'Vehicle',
+    emoji: '🚗',
+    category: 'transport',
+    baseShape: 'rounded',
+    description: 'Vehicles and transport'
   },
   {
     id: 'shop',
     name: 'Store',
+    emoji: '🏪',
     category: 'commerce',
-    baseShape: 'shop.svg',
-    description: 'Shopping and marketplace'
+    baseShape: 'rounded',
+    description: 'Shop and marketplace'
   },
   {
-    id: 'police',
-    name: 'Police',
-    category: 'services',
-    baseShape: 'police.svg',
-    description: 'Law enforcement services'
+    id: 'cart',
+    name: 'Cart',
+    emoji: '🛒',
+    category: 'commerce',
+    baseShape: 'rounded',
+    description: 'Shopping cart'
   },
   {
-    id: 'hospital',
-    name: 'EMS',
+    id: 'tools',
+    name: 'Tools',
+    emoji: '🛠️',
     category: 'services',
-    baseShape: 'hospital.svg',
-    description: 'Medical and emergency services'
+    baseShape: 'square',
+    description: 'Tools and utilities'
+  },
+  {
+    id: 'calendar',
+    name: 'Calendar',
+    emoji: '📅',
+    category: 'utility',
+    baseShape: 'square',
+    description: 'Calendar and events'
+  },
+  {
+    id: 'clock',
+    name: 'Clock',
+    emoji: '⏰',
+    category: 'utility',
+    baseShape: 'circle',
+    description: 'Time and clock'
   }
 ];
 
-export const getIconById = (id: string): Icon | undefined => {
-  return ICONS.find(icon => icon.id === id);
-};
+export const getIconById = (id: string): Icon | undefined => 
+  icons.find(icon => icon.id === id);
 
 export const getIconsByCategory = (category: string): Icon[] => {
-  if (category === 'all') return ICONS;
-  return ICONS.filter(icon => icon.category === category);
+  if (category === 'all') return icons;
+  return icons.filter(icon => icon.category === category);
 };
 
 export const getCategories = (): string[] => {
-  const categories = new Set(ICONS.map(icon => icon.category));
+  const categories = new Set(icons.map(icon => icon.category));
   return ['all', ...Array.from(categories)];
 };

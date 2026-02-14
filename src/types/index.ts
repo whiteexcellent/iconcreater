@@ -1,11 +1,10 @@
-// Core types for the icon generator
-
 export interface Icon {
   id: string;
   name: string;
+  emoji: string;
   category: IconCategory;
-  baseShape: string;
-  description?: string;
+  baseShape: 'circle' | 'square' | 'rounded' | 'hexagon';
+  description: string;
 }
 
 export type IconCategory = 
@@ -17,17 +16,16 @@ export type IconCategory =
   | 'transport' 
   | 'commerce' 
   | 'services' 
-  | 'utility' 
-  | 'real_estate';
+  | 'utility';
 
 export interface Theme {
   id: string;
   name: string;
+  emoji: string;
   description: string;
   style: string;
   negative: string;
   previewColor: string;
-  controlNetStrength: number;
   icon: string;
 }
 
@@ -38,37 +36,27 @@ export interface GenerationResult {
   prompt: string;
   pngData: string;
   svgData: string;
-  timestamp: Date;
-  downloadUrl?: string;
+  timestamp: string;
+  model: string;
 }
 
-export interface GenerationOptions {
-  iconId: string;
-  themeId: string;
-  customPrompt?: string;
-  resolution?: 256 | 512 | 768;
-  seed?: number;
-}
-
-export interface ModelStatus {
-  status: 'idle' | 'checking' | 'downloading' | 'loading' | 'ready' | 'error';
+export interface GeneratorState {
+  selectedIcon: Icon | null;
+  selectedTheme: Theme;
+  customPrompt: string;
+  isGenerating: boolean;
   progress: number;
-  message: string;
-  error?: string;
+  stageMessage: string;
+  currentResult: GenerationResult | null;
+  generationHistory: GenerationResult[];
 }
 
-export interface CacheEntry {
-  key: string;
-  result: GenerationResult;
-  timestamp: number;
-}
-
-export interface AIConfig {
-  modelId: string;
-  modelUrl: string;
-  tokenizerUrl: string;
-  vaeUrl: string;
-  unetUrl: string;
+export interface AnimationState {
+  isFunMode: boolean;
+  currentMascot: 'robot' | 'alien' | 'ninja' | 'cat' | 'wizard';
+  showConfetti: boolean;
+  easterEggsFound: string[];
+  particlesEnabled: boolean;
 }
 
 export type GenerationStage = 
@@ -80,14 +68,3 @@ export type GenerationStage =
   | 'optimizing'
   | 'complete'
   | 'error';
-
-export interface ProgressUpdate {
-  stage: GenerationStage;
-  progress: number;
-  message: string;
-}
-
-export interface FiveMConfig {
-  theme: string;
-  icons: Record<string, string>;
-}

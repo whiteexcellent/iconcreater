@@ -1,60 +1,59 @@
 import { Theme } from '@/types';
 
-export const THEMES: Theme[] = [
-  {
-    id: 'kawaii',
-    name: 'Kawaii',
-    description: 'Cute pastel style with soft lighting',
-    style: 'kawaii style, pastel pink and purple, sticker aesthetic, 3D clay render, cute, soft lighting, chibi, rounded shapes, glossy, adorable, soft shadows',
-    negative: 'dark, realistic, photo, scary, sharp edges, grayscale, monochrome, ugly, deformed, horror, gore, violence',
-    previewColor: '#FF6B9D',
-    controlNetStrength: 0.75,
-    icon: 'heart'
-  },
-  {
-    id: 'drift',
-    name: 'Drift',
-    description: 'JDM racing aesthetic with neon lights',
-    style: 'JDM style, neon lights, carbon fiber texture, slick design, futuristic, sports aesthetic, cyberpunk, metallic, gradient blue and purple, glow effects, racing stripes, tuner car culture, midnight racing',
-    negative: 'classic, vintage, slow, wooden, rustic, cartoon, cute, soft, rounded, family car, minivan',
-    previewColor: '#00D2FF',
-    controlNetStrength: 0.85,
-    icon: 'zap'
-  },
+export const themes: Theme[] = [
   {
     id: 'minimal',
     name: 'Minimal',
-    description: 'Clean flat design with geometric shapes',
+    emoji: '⚪',
+    description: 'Clean, simple, modern',
     style: 'minimalist design, flat style, solid colors, simple geometric shapes, clean lines, modern, professional, white space, duotone, elegant, sophisticated, material design',
-    negative: 'gradient, complex, detailed, texture, 3d, shadow, realistic, ornate, decorative, skeuomorphic',
-    previewColor: '#667EEA',
-    controlNetStrength: 0.9,
-    icon: 'minimize'
+    negative: 'cluttered, complex, gradients, shadows, ornate, decorative, busy',
+    previewColor: '#64748b',
+    icon: '⚪'
   },
   {
     id: 'neon',
     name: 'Neon',
-    description: 'Cyberpunk glow effects and vibrant colors',
-    style: 'neon cyberpunk style, glowing outlines, dark background with bright accents, synthwave, retro-futuristic, pink and cyan, electric glow, grid patterns, vibrant colors, high contrast, 80s retro wave',
-    negative: 'natural, organic, pastel, white background, daylight, soft, muted colors, brown, earth tones',
-    previewColor: '#F093FB',
-    controlNetStrength: 0.8,
-    icon: 'lightbulb'
+    emoji: '🌟',
+    description: 'Cyberpunk, glowing, vibrant',
+    style: 'neon lights, cyberpunk, glowing edges, electric blue, hot pink, lime green, synthwave, futuristic, high contrast, black background, luminescent, vibrant colors, tech noir',
+    negative: 'muted colors, pastel, natural, organic, soft, vintage',
+    previewColor: '#06b6d4',
+    icon: '🌟'
   },
   {
     id: 'retro',
     name: 'Retro',
-    description: '80s vaporwave aesthetic with bright colors',
+    emoji: '🕹️',
+    description: '80s style, vaporwave',
     style: '80s retro style, vaporwave, pixel art aesthetic, bright colors, geometric patterns, retro-futuristic, chrome, sunset gradient, palm trees, grid, nostalgic, Memphis design, synthwave',
-    negative: 'modern, minimalist, flat, realistic, 3d render, photorealistic, flat design, material design',
-    previewColor: '#FA709A',
-    controlNetStrength: 0.8,
-    icon: 'cassette-tape'
+    negative: 'modern minimal, flat design, monochrome, contemporary',
+    previewColor: '#f97316',
+    icon: '🕹️'
+  },
+  {
+    id: 'kawaii',
+    name: 'Kawaii',
+    emoji: '🌸',
+    description: 'Cute, pastel, Japanese',
+    style: 'kawaii style, cute, pastel colors, pink, soft gradients, rounded shapes, adorable, Japanese aesthetic, anime influence, sparkles, hearts, bows, cheerful, playful, soft lighting',
+    negative: 'dark, serious, angular, harsh, realistic, violent, scary',
+    previewColor: '#ec4899',
+    icon: '🌸'
+  },
+  {
+    id: 'drift',
+    name: 'Drift',
+    emoji: '🏎️',
+    description: 'Racing, speed, dynamic',
+    style: 'racing style, JDM, drift culture, speed lines, motion blur, flames, checkered flag, tire marks, street racing, dynamic angles, aggressive, sporty, red and black, flames, nitro',
+    negative: 'static, slow, calm, peaceful, soft, gentle, quiet',
+    previewColor: '#dc2626',
+    icon: '🏎️'
   }
 ];
 
-export const getThemeById = (id: string): Theme | undefined => {
-  return THEMES.find(theme => theme.id === id);
-};
+export const getThemeById = (id: string): Theme | undefined => 
+  themes.find(theme => theme.id === id);
 
-export const getDefaultTheme = (): Theme => THEMES[0];
+export const getDefaultTheme = (): Theme => themes[0];
