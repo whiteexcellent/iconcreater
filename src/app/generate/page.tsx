@@ -17,10 +17,6 @@ import { Check, Copy, Download, RefreshCcw, Sparkles, Wand2, AlertCircle } from 
 import Image from 'next/image';
 import Link from 'next/link';
 
-// REPLICATE API CONFIGURATION
-// Get your free token from: https://replicate.com/account/api-tokens
-const REPLICATE_API_TOKEN = process.env.NEXT_PUBLIC_REPLICATE_API_TOKEN || '';
-
 export default function GeneratePage() {
   const [copied, setCopied] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
@@ -45,99 +41,42 @@ export default function GeneratePage() {
 
   const { triggerConfetti } = useAnimationStore();
 
-  const generateWithReplicate = async (prompt: string): Promise<string> => {
-    // Step 1: Create prediction
-    const response = await fetch('https://api.replicate.com/v1/predictions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Token ${REPLICATE_API_TOKEN}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        version: "black-forest-labs/flux-schnell",
-        input: {
-          prompt,
-          width: 512,
-          height: 512,
-          num_outputs: 1,
-          aspect_ratio: "1:1",
-          output_format: "png",
-          guidance_scale: 3.5,
-          num_inference_steps: 4,
-        }
-      })
-    });
-
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.detail || 'Failed to start generation');
-    }
-
-    const prediction = await response.json();
-    
-    // Step 2: Poll for result
-    let result = prediction;
-    let attempts = 0;
-    const maxAttempts = 60; // 60 seconds max
-    
-    while (result.status !== 'succeeded' && result.status !== 'failed' && attempts < maxAttempts) {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      const pollResponse = await fetch(result.urls.get, {
-        headers: {
-          'Authorization': `Token ${REPLICATE_API_TOKEN}`,
-        }
-      });
-      
-      result = await pollResponse.json();
-      attempts++;
-      
-      // Update progress
-      const progressPercent = Math.min((attempts / 10) * 100, 95);
-      updateProgress(progressPercent, result.status === 'processing' ? 'AI is painting...' : 'Waiting in queue...');
-    }
-
-    if (result.status === 'failed') {
-      throw new Error(result.error || 'Generation failed');
-    }
-
-    if (!result.output || !result.output[0]) {
-      throw new Error('No image generated');
-    }
-
-    return result.output[0];
-  };
-
   const handleGenerate = async () => {
     if (!canGenerate()) return;
     
-    if (!REPLICATE_API_TOKEN) {
-      setApiError('Please add your Replicate API token to .env.local file. Get it from replicate.com/account/api-tokens');
-      return;
-    }
-
     setApiError(null);
     startGeneration();
     
     try {
-      updateProgress(5, 'Connecting to AI...');
+      updateProgress(10, 'Preparing...');
       
-      const prompt = `app icon design, ${selectedIcon?.name} icon, ${selectedIcon?.description}, ${selectedTheme.style}, centered composition, isolated object, white background, clean presentation, vector art style, masterpiece, sharp edges, simple geometric shapes, clean lines, professional, ${customPrompt || ''}`;
+      const response = await fetch('/api/generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          iconId: selectedIcon?.id,
+          themeId: selectedTheme.id,
+          customPrompt: customPrompt || undefined,
+        }),
+      });
+
+      updateProgress(50, 'Generating image...');
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Generation failed');
+      }
+
+      const result = await response.json();
       
-      const imageUrl = await generateWithReplicate(prompt);
+      if (!result.success) {
+        throw new Error(result.error || 'Unknown error');
+      }
 
-      const result = {
-        id: crypto.randomUUID(),
-        iconId: selectedIcon!.id,
-        themeId: selectedTheme.id,
-        prompt,
-        pngData: imageUrl,
-        svgData: '<svg></svg>',
-        timestamp: new Date().toISOString(),
-        model: 'Replicate (Flux Schnell)'
-      };
-
-      setResult(result);
+      updateProgress(100, 'Complete!');
+      setResult(result.data);
       triggerConfetti();
       
     } catch (error) {
@@ -159,18 +98,15 @@ export default function GeneratePage() {
   const handleDownload = async () => {
     if (currentResult?.pngData) {
       try {
-        const response = await fetch(currentResult.pngData);
-        const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `fivem-icon-${selectedIcon?.id}-${selectedTheme.id}.png`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        window.URL.revokeObjectURL(url);
+        // Base64 data URL'den indirme
+        const link = document.createElement('a');
+        link.href = currentResult.pngData;
+        link.download = `fivem-icon-${selectedIcon?.id}-${selectedTheme.id}.png`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
       } catch (error) {
-        window.open(currentResult.pngData, '_blank');
+        console.error('Download failed:', error);
       }
     }
   };
@@ -179,20 +115,6 @@ export default function GeneratePage() {
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
       <FloatingParticles />
       
-      {/* API Key Warning */}
-      {!REPLICATE_API_TOKEN && (
-        <div className="bg-yellow-500/20 border-b border-yellow-500/50 px-4 py-3">
-          <div className="max-w-7xl mx-auto flex items-center gap-2 text-yellow-400">
-            <AlertCircle className="h-5 w-5" />
-            <span className="font-medium">API Key Required:</span>
-            <span>Add NEXT_PUBLIC_REPLICATE_API_TOKEN to your .env.local file. Get free token from </span>
-            <a href="https://replicate.com/account/api-tokens" target="_blank" rel="noopener noreferrer" className="underline hover:text-yellow-300">
-              replicate.com
-            </a>
-          </div>
-        </div>
-      )}
-
       {/* API Error */}
       {apiError && (
         <div className="bg-red-500/20 border-b border-red-500/50 px-4 py-3">
@@ -217,7 +139,7 @@ export default function GeneratePage() {
               </div>
               <div>
                 <h1 className="text-xl font-bold text-slate-100">FiveM Icon Generator</h1>
-                <p className="text-xs text-slate-400">Powered by Replicate AI</p>
+                <p className="text-xs text-slate-400">AI-powered generation</p>
               </div>
             </motion.div>
           </Link>
@@ -347,7 +269,7 @@ export default function GeneratePage() {
             {/* Generate Button */}
             <ConfettiButton
               onClick={handleGenerate}
-              disabled={!canGenerate() || !REPLICATE_API_TOKEN}
+              disabled={!canGenerate()}
             >
               {isGenerating ? (
                 <>
@@ -446,15 +368,8 @@ export default function GeneratePage() {
                         </div>
 
                         <div className="mt-4 p-3 bg-slate-900 rounded-lg max-w-[300px] w-full">
-                          <p className="text-xs text-slate-500 mb-1">Image URL:</p>
-                          <a 
-                            href={currentResult.pngData}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-xs text-primary-400 hover:underline break-all"
-                          >
-                            {currentResult.pngData.substring(0, 60)}...
-                          </a>
+                          <p className="text-xs text-slate-500 mb-1">Model:</p>
+                          <p className="text-xs text-primary-400">{currentResult.model}</p>
                         </div>
                       </motion.div>
                     )}
