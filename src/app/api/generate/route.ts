@@ -1,19 +1,22 @@
 // src/app/api/generate/route.ts
-// SERVER-SIDE: API Key burada güvenle saklanır, client'a asla gitmez!
+// Hugging Face Inference API - Ücretsiz, Yüksek Kaliteli AI Görsel Üretimi
 
 import { NextRequest, NextResponse } from 'next/server';
 import { PromptBuilder } from '@/lib/utils/prompt-builder';
 import { getThemeById } from '@/data/themes';
 import { getIconById } from '@/data/icons';
 
-// Rate limiting için basit memory store (production'da Redis kullanılabilir)
+// Rate limiting için basit memory store
 const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
 
-// Güvenlik: Rate Limiting
+// Hugging Face Model - FLUX.1 Schnell (Yüksek Kalite, Hızlı)
+const HF_MODEL = 'black-forest-labs/FLUX.1-schnell';
+// Alternatif: 'stabilityai/stable-diffusion-xl-base-1.0'
+
 function checkRateLimit(ip: string): boolean {
   const now = Date.now();
   const windowMs = 60 * 1000; // 1 dakika
-  const maxRequests = parseInt(process.env.RATE_LIMIT_REQUESTS_PER_MINUTE || '10');
+  const maxRequests = parseInt(process.env.RATE_LIMIT_REQUESTS_PER_MINUTE || '5'); // HF limit daha düşük
   
   const current = rateLimitMap.get(ip);
   
@@ -30,7 +33,6 @@ function checkRateLimit(ip: string): boolean {
   return true;
 }
 
-// Güvenlik: IP adresini al
 function getClientIp(req: NextRequest): string {
   const forwarded = req.headers.get('x-forwarded-for');
   return forwarded ? forwarded.split(',')[0].trim() : 'unknown';
@@ -47,17 +49,17 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // 2. API Key Kontrolü (Server-side only!)
-    const apiKey = process.env.FAL_AI_API_KEY;
+    // 2. Hugging Face API Key Kontrolü
+    const apiKey = process.env.HUGGING_FACE_API_KEY;
     if (!apiKey) {
-      console.error('FAL_AI_API_KEY not configured');
+      console.error('HUGGING_FACE_API_KEY not configured');
       return NextResponse.json(
-        { error: 'Server configuration error' },
+        { error: 'Server configuration error - API key missing' },
         { status: 500 }
       );
     }
 
-    // 3. Request Body'yi al ve doğrula
+    // 3. Request Body'yi al
     const body = await req.json();
     const { iconId, themeId, customPrompt } = body;
 
@@ -79,56 +81,65 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // 5. Prompt oluştur
+    // 5. Prompt oluştur (Detaylı ve kaliteli)
     const prompt = PromptBuilder.buildPrompt(icon, theme, customPrompt);
+    const negativePrompt = theme.negative || 'blurry, low quality, distorted, ugly, bad anatomy';
     
-    // 6. Fal.ai API'ye istek at (API Key SADECE server'da!)
-    const falResponse = await fetch('https://fal.run/fal-ai/fast-sdxl', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Key ${apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        prompt,
-        negative_prompt: theme.negative,
-        image_size: 'square_hd', // 1024x1024
-        num_inference_steps: 4,
-        guidance_scale: 7.5,
-      }),
-    });
+    console.log('Generating image with prompt:', prompt);
 
-    if (!falResponse.ok) {
-      const errorText = await falResponse.text();
-      console.error('Fal.ai API error:', errorText);
+    // 6. Hugging Face Inference API'ye istek at
+    const hfResponse = await fetch(
+      `https://api-inference.huggingface.co/models/${HF_MODEL}`,
+      {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          inputs: prompt,
+          parameters: {
+            negative_prompt: negativePrompt,
+            width: 512,
+            height: 512,
+            num_inference_steps: 4, // FLUX Schnell için optimum
+            guidance_scale: 7.5,
+            seed: Math.floor(Math.random() * 1000000),
+          },
+        }),
+      }
+    );
+
+    if (!hfResponse.ok) {
+      const errorText = await hfResponse.text();
+      console.error('Hugging Face API error:', errorText);
+      
+      // Model loading durumunu kontrol et
+      if (errorText.includes('loading') || hfResponse.status === 503) {
+        return NextResponse.json(
+          { error: 'Model is loading, please try again in 10-20 seconds' },
+          { status: 503 }
+        );
+      }
+      
       return NextResponse.json(
-        { error: 'Image generation failed' },
+        { error: `Image generation failed: ${errorText}` },
         { status: 502 }
       );
     }
 
-    // 7. Fal.ai'den gelen cevabı işle
-    const falData = await falResponse.json();
-    
-    if (!falData.images || falData.images.length === 0) {
-      return NextResponse.json(
-        { error: 'No image generated' },
-        { status: 500 }
-      );
-    }
-
-    const imageUrl = falData.images[0].url;
-
-    // 8. Görseli indir ve base64'e çevir (opsiyonel - güvenlik için)
-    const imageResponse = await fetch(imageUrl);
-    const imageBuffer = await imageResponse.arrayBuffer();
-    const base64Image = Buffer.from(imageBuffer).toString('base64');
+    // 7. Hugging Face blob olarak görsel döndürür
+    const imageBlob = await hfResponse.blob();
+    const arrayBuffer = await imageBlob.arrayBuffer();
+    const base64Image = Buffer.from(arrayBuffer).toString('base64');
     const dataUrl = `data:image/png;base64,${base64Image}`;
 
-    // 9. SVG'ye çevir (basit placeholder - gerçek uygulamada vectorization yapılmalı)
+    console.log('Image generated successfully, size:', arrayBuffer.byteLength);
+
+    // 8. SVG'ye çevir
     const svgData = createSVGFromImage(icon.name, theme.name, theme.previewColor);
 
-    // 10. Başarılı yanıt döndür
+    // 9. Başarılı yanıt döndür
     return NextResponse.json({
       success: true,
       data: {
@@ -139,6 +150,7 @@ export async function POST(req: NextRequest) {
         pngData: dataUrl,
         svgData,
         timestamp: new Date().toISOString(),
+        model: HF_MODEL,
       }
     });
 
@@ -151,7 +163,7 @@ export async function POST(req: NextRequest) {
   }
 }
 
-// Basit SVG oluşturucu (placeholder)
+// Basit SVG oluşturucu
 function createSVGFromImage(iconName: string, themeName: string, color: string): string {
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
     <rect width="512" height="512" fill="${color}" rx="64"/>
