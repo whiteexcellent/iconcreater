@@ -17,17 +17,6 @@ import { Check, Copy, Download, RefreshCcw, Sparkles, Wand2, AlertCircle } from 
 import Image from 'next/image';
 import Link from 'next/link';
 
-// Puter.js tipi
-declare global {
-  interface Window {
-    puter?: {
-      ai: {
-        txt2img: (prompt: string, options?: { model?: string }) => Promise<HTMLImageElement>;
-      };
-    };
-  }
-}
-
 export default function GeneratePage() {
   const [copied, setCopied] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
