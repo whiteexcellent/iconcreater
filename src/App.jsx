@@ -10,47 +10,23 @@ function App() {
   return (
     <div className="flex h-screen w-screen bg-[#020202] text-white overflow-hidden font-sans relative">
 
-      {/* Dynamic Ambient Background Orbs - EXTREME ANIMATION LOGIC */}
+      {/* Dynamic Ambient Background Orbs */}
       <AnimatePresence mode="wait">
         <motion.div
           key={`orb-1-${activeTheme.id}`}
-          initial={{ opacity: 0, scale: 0.8, rotate: 0 }}
-          animate={{
-            opacity: [0.10, 0.20, 0.10],
-            scale: [1, 1.15, 1],
-            rotate: [0, 90, 180, 270, 360],
-            x: [0, 50, 0, -50, 0],
-            y: [0, -30, 0, 30, 0]
-          }}
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 0.15, scale: 1 }}
           exit={{ opacity: 0, scale: 1.1 }}
-          transition={{
-            opacity: { duration: 8, repeat: Infinity, ease: "easeInOut" },
-            scale: { duration: 12, repeat: Infinity, ease: "easeInOut" },
-            rotate: { duration: 45, repeat: Infinity, ease: "linear" },
-            x: { duration: 15, repeat: Infinity, ease: "easeInOut" },
-            y: { duration: 20, repeat: Infinity, ease: "easeInOut" }
-          }}
+          transition={{ duration: 1.5, ease: "easeInOut" }}
           className="absolute top-[-20%] left-[-10%] w-[60vw] h-[60vw] rounded-[100px] blur-[120px] pointer-events-none"
           style={{ backgroundColor: activeTheme.colors.accent || activeTheme.colors.primary }}
         />
         <motion.div
           key={`orb-2-${activeTheme.id}`}
-          initial={{ opacity: 0, scale: 0.8, rotate: 0 }}
-          animate={{
-            opacity: [0.05, 0.15, 0.05],
-            scale: [1, 1.2, 1],
-            rotate: [360, 270, 180, 90, 0],
-            x: [0, -40, 0, 40, 0],
-            y: [0, 40, 0, -40, 0]
-          }}
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 0.08, scale: 1 }}
           exit={{ opacity: 0, scale: 1.1 }}
-          transition={{
-            opacity: { duration: 10, repeat: Infinity, ease: "easeInOut" },
-            scale: { duration: 15, repeat: Infinity, ease: "easeInOut" },
-            rotate: { duration: 60, repeat: Infinity, ease: "linear" },
-            x: { duration: 20, repeat: Infinity, ease: "easeInOut", delay: 1 },
-            y: { duration: 18, repeat: Infinity, ease: "easeInOut", delay: 2 }
-          }}
+          transition={{ duration: 2, ease: "easeInOut", delay: 0.2 }}
           className="absolute bottom-[-20%] right-[-10%] w-[50vw] h-[50vw] rounded-[80px] blur-[100px] pointer-events-none"
           style={{ backgroundColor: activeTheme.colors.primary }}
         />
@@ -72,17 +48,16 @@ function App() {
             <header className="mb-20 relative z-20">
               <motion.h1
                 key={`title-${activeTheme.id}`}
-                initial={{ opacity: 0, y: -30, filter: "blur(20px)" }}
+                initial={{ opacity: 0, y: -20, filter: "blur(10px)" }}
                 animate={{
                   opacity: 1,
                   y: 0,
                   filter: "blur(0px)",
-                  textShadow: [`0px 0px 0px ${activeTheme.colors.accent}`, `0px 0px 30px ${activeTheme.colors.accent}`, `0px 0px 0px ${activeTheme.colors.accent}`]
+                  textShadow: `0px 0px 15px ${activeTheme.colors.accent}`
                 }}
                 transition={{
                   duration: 0.8,
-                  ease: "backOut",
-                  textShadow: { duration: 4, repeat: Infinity, ease: "easeInOut", delay: 1 }
+                  ease: "easeOut"
                 }}
                 className="text-6xl font-black tracking-tighter mb-4 text-transparent bg-clip-text bg-gradient-to-br from-white to-white/60 drop-shadow-xl"
               >

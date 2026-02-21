@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Copy, Check } from 'lucide-react';
 import { KawaiiEngine } from '../icons/KawaiiEngine';
@@ -53,13 +54,13 @@ function PreviewModal({ app, theme, onClose, rawSvg }) {
         exit: { opacity: 0, scale: 0.9, y: 20 }
     };
 
-    return (
+    return createPortal(
         <motion.div
             variants={backdropVariants}
             initial="hidden"
             animate="visible"
             exit="hidden"
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md"
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md"
             onClick={onClose}
         >
             <motion.div
@@ -159,7 +160,8 @@ function PreviewModal({ app, theme, onClose, rawSvg }) {
                     </motion.button>
                 </div>
             </motion.div>
-        </motion.div>
+        </motion.div>,
+        document.body
     );
 }
 
@@ -223,14 +225,6 @@ export function Gallery({ theme, apps }) {
                 {apps.map((app, index) => (
                     <motion.div
                         variants={itemVariants}
-                        animate={{
-                            y: [0, -8, 0],
-                        }}
-                        transition={{
-                            repeat: Infinity,
-                            duration: 4 + (index % 3), // Stagger the floating speeds slightly
-                            ease: "easeInOut"
-                        }}
                         whileHover={{ scale: 1.15, zIndex: 10, y: -15, transition: { duration: 0.3 } }}
                         whileTap={{ scale: 0.9 }}
                         key={app.id}

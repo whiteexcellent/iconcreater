@@ -26,20 +26,20 @@ export function Sidebar({ themes, activeTheme, onSelectTheme }) {
                         <path d="M50 15L85 35V65L50 85L15 65V35L50 15Z" stroke="url(#logoGrad1)" strokeWidth="6" strokeLinejoin="round" />
                         <path d="M50 85V50M15 35L50 50M85 35L50 50" stroke="url(#logoGrad2)" strokeWidth="4" strokeLinecap="round" />
                         <circle cx="50" cy="50" r="8" fill="url(#logoGrad3)" />
-                        <circle cx="50" cy="15" r="4" fill="#A855F7" />
+                        <circle cx="50" cy="15" r="4" fill="#38BDF8" />
                         <circle cx="85" cy="35" r="4" fill="#6366F1" />
                         <circle cx="85" cy="65" r="4" fill="#3B82F6" />
-                        <circle cx="50" cy="85" r="4" fill="#EC4899" />
-                        <circle cx="15" cy="65" r="4" fill="#F43F5E" />
-                        <circle cx="15" cy="35" r="4" fill="#8B5CF6" />
+                        <circle cx="50" cy="85" r="4" fill="#8B5CF6" />
+                        <circle cx="15" cy="65" r="4" fill="#6366F1" />
+                        <circle cx="15" cy="35" r="4" fill="#06B6D4" />
                         <defs>
                             <linearGradient id="logoGrad1" x1="15" y1="15" x2="85" y2="85" gradientUnits="userSpaceOnUse">
-                                <stop stopColor="#A855F7" />
+                                <stop stopColor="#38BDF8" />
                                 <stop offset="0.5" stopColor="#3B82F6" />
-                                <stop offset="1" stopColor="#EC4899" />
+                                <stop offset="1" stopColor="#8B5CF6" />
                             </linearGradient>
                             <linearGradient id="logoGrad2" x1="15" y1="35" x2="85" y2="85" gradientUnits="userSpaceOnUse">
-                                <stop stopColor="#EC4899" />
+                                <stop stopColor="#8B5CF6" />
                                 <stop offset="1" stopColor="#6366F1" />
                             </linearGradient>
                             <radialGradient id="logoGrad3" cx="50" cy="50" r="8" gradientUnits="userSpaceOnUse">
