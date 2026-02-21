@@ -220,26 +220,38 @@ export function Gallery({ theme, apps }) {
                 animate="show"
                 className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6"
             >
-                {apps.map((app) => (
+                {apps.map((app, index) => (
                     <motion.div
                         variants={itemVariants}
-                        whileHover={{ scale: 1.15, y: -8, zIndex: 10 }}
+                        animate={{
+                            y: [0, -8, 0],
+                        }}
+                        transition={{
+                            repeat: Infinity,
+                            duration: 4 + (index % 3), // Stagger the floating speeds slightly
+                            ease: "easeInOut"
+                        }}
+                        whileHover={{ scale: 1.15, zIndex: 10, y: -15, transition: { duration: 0.3 } }}
                         whileTap={{ scale: 0.9 }}
                         key={app.id}
-                        className="group flex flex-col items-center justify-center p-6 cursor-pointer relative rounded-3xl transition-colors duration-300 hover:bg-white/[0.02] border border-transparent hover:border-white/5"
+                        className="group flex flex-col items-center justify-center p-6 cursor-pointer relative rounded-3xl transition-colors duration-300 hover:bg-white/[0.04] border border-transparent hover:border-white/10"
                         onClick={() => setSelectedApp(app)}
                     >
-                        {/* Interactive Spatial SVG Projection */}
-                        <div className="w-[100px] h-[100px] mb-5 relative z-10 drop-shadow-2xl">
-                            {renderIcon(app.id)}
+                        {/* Interactive Spatial SVG Projection - FIXED ALIGNMENT */}
+                        <div className="w-[100px] h-[100px] mb-4 relative z-10 drop-shadow-2xl flex items-center justify-center">
+                            {/* Make inner render icon fill exactly */}
+                            <div className="w-full h-full flex items-center justify-center">
+                                {renderIcon(app.id)}
+                            </div>
+
                             {/* Deep Spatial Hover Ambient Glow */}
                             <div
-                                className="absolute inset-0 -z-10 blur-2xl opacity-0 group-hover:opacity-70 transition-opacity duration-300 rounded-full scale-125"
+                                className="absolute inset-0 -z-10 blur-[30px] opacity-0 group-hover:opacity-80 transition-opacity duration-300 rounded-full scale-150"
                                 style={{ backgroundColor: theme.colors.accent || theme.colors.primary }}
                             />
                         </div>
 
-                        <span className="text-sm font-semibold tracking-wide text-white/30 group-hover:text-white/90 transition-colors truncate w-full text-center">
+                        <span className="text-sm font-bold tracking-wider text-white/40 group-hover:text-white transition-colors truncate w-full text-center drop-shadow-sm">
                             {app.name}
                         </span>
                     </motion.div>
