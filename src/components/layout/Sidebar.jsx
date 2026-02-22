@@ -24,18 +24,6 @@ export function Sidebar({ themes }) {
     };
 
     const activeIndex = themes.findIndex(t => t.id === activeTheme.id);
-    const scrollRef = useRef(null);
-    const itemRefs = useRef([]);
-
-    // Automatically scroll the active theme securely into the center of the container
-    useEffect(() => {
-        if (itemRefs.current[activeIndex]) {
-            itemRefs.current[activeIndex].scrollIntoView({
-                behavior: 'smooth',
-                block: 'center'
-            });
-        }
-    }, [activeIndex]);
 
     return (
         <div className="w-full md:w-[320px] flex flex-col h-auto md:h-[calc(100vh-32px)] md:my-4 md:ml-4 rounded-b-[24px] md:rounded-[32px] bg-[#050505]/80 md:bg-[#050505]/60 md:border border-b border-white/[0.04] backdrop-blur-[40px] md:backdrop-blur-[80px] shrink-0 z-50 shadow-2xl md:shadow-[0_20px_80px_rgba(0,0,0,0.8)] relative overflow-hidden transition-all duration-500">
@@ -113,10 +101,7 @@ export function Sidebar({ themes }) {
                     <div className="h-px bg-gradient-to-r from-white/10 via-transparent to-transparent flex-1" />
                 </div>
 
-                <div
-                    ref={scrollRef}
-                    className="flex-none md:flex-1 w-full overflow-x-auto md:overflow-y-auto px-4 md:px-4 pb-4 md:pb-8 custom-scrollbar snap-x md:snap-y snap-mandatory relative"
-                >
+                <div className="flex-none md:flex-1 w-full overflow-x-auto md:overflow-y-auto px-4 md:px-4 pb-4 md:pb-8 custom-scrollbar relative">
                     <motion.div
                         variants={containerVariants}
                         initial="hidden"
@@ -127,14 +112,13 @@ export function Sidebar({ themes }) {
                             return (
                                 <motion.button
                                     key={theme.id}
-                                    ref={el => itemRefs.current[index] = el}
                                     variants={itemVariants}
                                     onMouseEnter={playHoverSound}
                                     onClick={() => {
                                         playClickSound();
                                         setActiveTheme(theme);
                                     }}
-                                    className={`w-max md:w-full flex-none text-left px-5 md:px-5 py-3 md:py-4 rounded-full md:rounded-[20px] text-[12px] md:text-[13px] relative transition-all duration-300 z-10 flex items-center justify-between gap-4 md:gap-0 group snap-center border border-transparent ${theme.id === activeTheme.id
+                                    className={`w-max md:w-full flex-none text-left px-5 md:px-5 py-3 md:py-4 rounded-full md:rounded-[20px] text-[12px] md:text-[13px] relative transition-all duration-300 z-10 flex items-center justify-between gap-4 md:gap-0 group border border-transparent ${theme.id === activeTheme.id
                                         ? 'text-white font-semibold tracking-wide border-white/10 shadow-lg md:shadow-2xl bg-white/[0.08] md:bg-transparent'
                                         : 'text-white/50 hover:text-white/90 hover:bg-white/[0.04] md:hover:bg-white/[0.02] font-medium tracking-wide hover:border-white/5 bg-white/[0.02] md:bg-transparent'
                                         }`}
