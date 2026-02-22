@@ -24,7 +24,7 @@ export function Sidebar({ themes }) {
     };
 
     return (
-        <div className="w-72 flex flex-col h-full bg-black/20 border-r border-white-[0.02] backdrop-blur-[40px] shrink-0 z-20 shadow-[0_0_40px_rgba(0,0,0,0.5)]">
+        <div className="w-[320px] flex flex-col h-[calc(100vh-32px)] my-4 ml-4 rounded-[32px] bg-[#050505]/60 border border-white/[0.04] backdrop-blur-[80px] shrink-0 z-50 shadow-[0_20px_80px_rgba(0,0,0,0.8)] relative overflow-hidden">
             <div className="p-8 pb-6">
                 <h2 className="text-2xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-br from-white to-white/60 flex items-center gap-3">
                     <svg className="w-10 h-10 drop-shadow-[0_0_12px_rgba(168,85,247,0.6)]" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -66,7 +66,7 @@ export function Sidebar({ themes }) {
                             playClickSound();
                             window.dispatchEvent(new CustomEvent('OPEN_SPOTLIGHT'));
                         }}
-                        className="w-full bg-white/[0.03] hover:bg-white/[0.08] transition-all duration-300 rounded-2xl p-3.5 flex items-center justify-between text-white/40 group border border-transparent hover:border-white/10"
+                        className="w-full bg-black/40 hover:bg-black/60 shadow-[inset_0_1px_1px_rgba(255,255,255,0.02)] transition-all duration-300 rounded-full p-3.5 px-5 flex items-center justify-between text-white/40 group border border-transparent hover:border-white/10"
                     >
                         <div className="flex items-center gap-3">
                             <Search size={16} className="text-white/30 group-hover:text-white/70 transition-colors duration-300" />
@@ -136,14 +136,13 @@ export function Sidebar({ themes }) {
                 </div>
             </div>
 
-            <div className="border-t border-white/5 p-4 flex flex-col gap-4 relative z-20 bg-black/40 backdrop-blur-md">
+            <div className="border-t border-white/[0.04] p-2 flex flex-col gap-4 relative z-20 bg-transparent mb-1">
                 <BatchExportButton themes={themes} />
             </div>
 
-            <div className="p-6 relative overflow-hidden flex flex-col items-center justify-center">
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent pointer-events-none" />
-                <div className="w-12 h-1 bg-white/10 rounded-full mb-4 relative z-10" />
-                <div className="relative z-10 text-[10px] text-white/30 font-medium tracking-wider uppercase leading-relaxed text-center">
+            <div className="p-5 relative overflow-hidden flex flex-col items-center justify-center">
+                <div className="w-8 h-[2px] bg-white-[0.05] rounded-full mb-3 relative z-10" />
+                <div className="relative z-10 text-[9px] text-white/20 font-bold tracking-[0.2em] uppercase text-center opacity-60">
                     Handcrafted Vectors
                 </div>
             </div>

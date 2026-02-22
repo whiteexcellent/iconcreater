@@ -66,16 +66,27 @@ export function BatchExportButton() {
         <button
             onClick={handleExport}
             disabled={isExporting}
-            className="flex items-center justify-center gap-2 w-full py-4 bg-white/5 hover:bg-white/10 text-white rounded-2xl transition-all duration-200 border border-white/5 hover:border-white/20 mt-4 shadow-xl mb-8 group"
+            className="flex flex-col items-center justify-center gap-1.5 w-full py-4 px-6 bg-transparent hover:bg-white/[0.02] text-white rounded-[24px] transition-all duration-500 border border-transparent hover:border-white/[0.05] mt-2 group relative overflow-hidden"
         >
-            {isExporting ? (
-                <Loader2 size={18} className="animate-spin text-white/50" />
-            ) : (
-                <Download size={18} className="text-white/50 group-hover:text-white transition-colors" />
+            <div className="flex items-center gap-2 mb-0.5 relative z-10">
+                {isExporting ? (
+                    <Loader2 size={16} className="animate-spin text-white/50" />
+                ) : (
+                    <Download size={16} className="text-white/40 group-hover:text-white/80 transition-colors duration-500" />
+                )}
+                <span className="font-semibold text-[13px] tracking-wide text-white/60 group-hover:text-white/90 transition-colors duration-500">
+                    {isExporting ? 'Zipping Assets...' : 'Export Theme'}
+                </span>
+            </div>
+
+            {!isExporting && (
+                <span className="text-[10px] text-white/30 font-semibold tracking-wider uppercase relative z-10">
+                    {activeTheme.name}
+                </span>
             )}
-            <span className="font-semibold text-sm tracking-wide text-white/80 group-hover:text-white">
-                {isExporting ? 'Zipping Assets...' : `Export ${activeTheme.name} Theme`}
-            </span>
+
+            {/* Subtle glow effect on hover */}
+            <div className="absolute inset-0 bg-gradient-to-t from-white/[0.03] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
         </button>
     );
 }
