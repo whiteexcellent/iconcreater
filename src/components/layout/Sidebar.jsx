@@ -38,38 +38,40 @@ export function Sidebar({ themes }) {
     }, [activeIndex]);
 
     return (
-        <div className="w-full md:w-[320px] flex flex-col h-[400px] md:h-[calc(100vh-32px)] md:my-4 md:ml-4 rounded-b-[40px] md:rounded-[32px] bg-[#050505]/60 border-b md:border-t-0 md:border border-white/[0.04] backdrop-blur-[80px] shrink-0 z-50 shadow-[0_20px_80px_rgba(0,0,0,0.8)] relative overflow-hidden transition-all duration-500">
-            <div className="p-8 pb-6">
-                <h2 className="text-2xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-br from-white to-white/60 flex items-center gap-3">
-                    <svg className="w-10 h-10 drop-shadow-[0_0_12px_rgba(168,85,247,0.6)]" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M50 15L85 35V65L50 85L15 65V35L50 15Z" stroke="url(#logoGrad1)" strokeWidth="6" strokeLinejoin="round" />
-                        <path d="M50 85V50M15 35L50 50M85 35L50 50" stroke="url(#logoGrad2)" strokeWidth="4" strokeLinecap="round" />
-                        <circle cx="50" cy="50" r="8" fill="url(#logoGrad3)" />
-                        <circle cx="50" cy="15" r="4" fill="#38BDF8" />
-                        <circle cx="85" cy="35" r="4" fill="#6366F1" />
-                        <circle cx="85" cy="65" r="4" fill="#3B82F6" />
-                        <circle cx="50" cy="85" r="4" fill="#8B5CF6" />
-                        <circle cx="15" cy="65" r="4" fill="#6366F1" />
-                        <circle cx="15" cy="35" r="4" fill="#06B6D4" />
-                        <defs>
-                            <linearGradient id="logoGrad1" x1="15" y1="15" x2="85" y2="85" gradientUnits="userSpaceOnUse">
-                                <stop stopColor="#38BDF8" />
-                                <stop offset="0.5" stopColor="#3B82F6" />
-                                <stop offset="1" stopColor="#8B5CF6" />
-                            </linearGradient>
-                            <linearGradient id="logoGrad2" x1="15" y1="35" x2="85" y2="85" gradientUnits="userSpaceOnUse">
-                                <stop stopColor="#8B5CF6" />
-                                <stop offset="1" stopColor="#6366F1" />
-                            </linearGradient>
-                            <radialGradient id="logoGrad3" cx="50" cy="50" r="8" gradientUnits="userSpaceOnUse">
-                                <stop stopColor="#FFFFFF" />
-                                <stop offset="1" stopColor="#3B82F6" />
-                            </radialGradient>
-                        </defs>
-                    </svg>
-                    FiveM Studio
-                </h2>
-                <p className="text-sm text-white/40 mt-2 font-medium tracking-wide">Premium SVG Assets</p>
+        <div className="w-full md:w-[320px] flex flex-col h-auto md:h-[calc(100vh-32px)] md:my-4 md:ml-4 rounded-b-3xl md:rounded-[32px] bg-[#050505]/60 md:border border-b border-white/[0.04] backdrop-blur-[80px] shrink-0 z-50 shadow-[0_20px_80px_rgba(0,0,0,0.8)] relative overflow-hidden transition-all duration-500">
+            <div className="p-6 md:p-8 pb-4 md:pb-6 flex items-center justify-between">
+                <div>
+                    <h2 className="text-xl md:text-2xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-br from-white to-white/60 flex items-center gap-3">
+                        <svg className="w-8 h-8 md:w-10 md:h-10 drop-shadow-[0_0_12px_rgba(168,85,247,0.6)]" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M50 15L85 35V65L50 85L15 65V35L50 15Z" stroke="url(#logoGrad1)" strokeWidth="6" strokeLinejoin="round" />
+                            <path d="M50 85V50M15 35L50 50M85 35L50 50" stroke="url(#logoGrad2)" strokeWidth="4" strokeLinecap="round" />
+                            <circle cx="50" cy="50" r="8" fill="url(#logoGrad3)" />
+                            <circle cx="50" cy="15" r="4" fill="#38BDF8" />
+                            <circle cx="85" cy="35" r="4" fill="#6366F1" />
+                            <circle cx="85" cy="65" r="4" fill="#3B82F6" />
+                            <circle cx="50" cy="85" r="4" fill="#8B5CF6" />
+                            <circle cx="15" cy="65" r="4" fill="#6366F1" />
+                            <circle cx="15" cy="35" r="4" fill="#06B6D4" />
+                            <defs>
+                                <linearGradient id="logoGrad1" x1="15" y1="15" x2="85" y2="85" gradientUnits="userSpaceOnUse">
+                                    <stop stopColor="#38BDF8" />
+                                    <stop offset="0.5" stopColor="#3B82F6" />
+                                    <stop offset="1" stopColor="#8B5CF6" />
+                                </linearGradient>
+                                <linearGradient id="logoGrad2" x1="15" y1="35" x2="85" y2="85" gradientUnits="userSpaceOnUse">
+                                    <stop stopColor="#8B5CF6" />
+                                    <stop offset="1" stopColor="#6366F1" />
+                                </linearGradient>
+                                <radialGradient id="logoGrad3" cx="50" cy="50" r="8" gradientUnits="userSpaceOnUse">
+                                    <stop stopColor="#FFFFFF" />
+                                    <stop offset="1" stopColor="#3B82F6" />
+                                </radialGradient>
+                            </defs>
+                        </svg>
+                        FiveM Studio
+                    </h2>
+                    <p className="text-[11px] md:text-sm text-white/40 mt-1 md:mt-2 font-medium tracking-wide hidden md:block">Premium SVG Assets</p>
+                </div>
             </div>
 
             <div className="flex-1 py-6 space-y-1 overflow-hidden flex flex-col">
@@ -103,57 +105,35 @@ export function Sidebar({ themes }) {
 
                 <div
                     ref={scrollRef}
-                    className="flex-1 overflow-y-auto px-4 custom-scrollbar snap-y snap-mandatory relative"
-                    style={{ perspective: '800px' }}
+                    className="flex-none md:flex-1 w-full overflow-x-auto md:overflow-y-auto px-6 md:px-4 pb-4 md:pb-8 custom-scrollbar snap-x md:snap-y snap-mandatory relative"
                 >
                     <motion.div
                         variants={containerVariants}
                         initial="hidden"
                         animate="show"
-                        className="flex flex-col space-y-4"
-                        style={{ transformStyle: 'preserve-3d' }}
+                        className="flex flex-row md:flex-col space-x-3 md:space-x-0 md:space-y-2 py-2 md:py-4 w-max md:w-full"
                     >
-                        {/* Upper Spacer for Center Alignment */}
-                        <div className="h-[140px] shrink-0" />
-
                         {themes.map((theme, index) => {
-                            const distance = index - activeIndex;
-                            const absDistance = Math.abs(distance);
-
-                            // 3D Rotary Math
-                            const scale = Math.max(0.7, 1 - (absDistance * 0.15));
-                            const opacity = Math.max(0.15, 1 - (absDistance * 0.3));
-                            const rotateX = distance * -20; // 20deg tilt per step
-                            const yOffset = distance * -15; // Fan out densely
-
                             return (
                                 <motion.button
                                     key={theme.id}
                                     ref={el => itemRefs.current[index] = el}
                                     variants={itemVariants}
-                                    animate={{
-                                        scale,
-                                        opacity,
-                                        rotateX,
-                                        y: yOffset
-                                    }}
-                                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                                    style={{ transformOrigin: 'center center' }}
                                     onMouseEnter={playHoverSound}
                                     onClick={() => {
                                         playClickSound();
                                         setActiveTheme(theme);
                                     }}
-                                    className={`w-full text-left px-4 py-3.5 rounded-2xl text-[13px] relative transition-all duration-300 z-10 flex items-center justify-between group snap-center ${theme.id === activeTheme.id
-                                        ? 'text-white font-semibold tracking-wide'
-                                        : 'text-white/40 hover:text-white/90 hover:bg-white/[0.03] font-medium tracking-wide'
+                                    className={`w-[200px] md:w-full flex-none text-left px-5 py-4 rounded-[20px] text-[13px] relative transition-all duration-300 z-10 flex items-center justify-between group snap-center border border-transparent ${theme.id === activeTheme.id
+                                        ? 'text-white font-semibold tracking-wide border-white/10 shadow-2xl'
+                                        : 'text-white/40 hover:text-white/90 hover:bg-white/[0.02] font-medium tracking-wide hover:border-white/5'
                                         }`}
                                 >
                                     {/* The Physical Background Tab that smoothly animates between active items */}
                                     {theme.id === activeTheme.id && (
                                         <motion.div
                                             layoutId="activeTab"
-                                            className="absolute inset-0 bg-white/[0.08] rounded-2xl border border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)]"
+                                            className="absolute inset-0 bg-white/[0.06] rounded-[20px] shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)]"
                                             transition={{ type: "spring", stiffness: 350, damping: 35 }}
                                         />
                                     )}
@@ -162,19 +142,16 @@ export function Sidebar({ themes }) {
                                     </span>
                                     <span className="relative z-20 flex items-center justify-center">
                                         <div
-                                            className={`w-2.5 h-2.5 rounded-full transition-all duration-500 ${theme.id === activeTheme.id ? 'scale-100 opacity-100' : 'scale-50 opacity-30 group-hover:scale-75 group-hover:opacity-70'}`}
+                                            className={`w-2 h-2 rounded-full transition-all duration-500 ${theme.id === activeTheme.id ? 'scale-100 opacity-100' : 'scale-75 opacity-20 group-hover:scale-100 group-hover:opacity-70'}`}
                                             style={{
                                                 backgroundColor: theme.colors.accent,
-                                                boxShadow: theme.id === activeTheme.id ? `0 0 12px ${theme.colors.accent}` : 'none'
+                                                boxShadow: theme.id === activeTheme.id ? `0 0 16px ${theme.colors.accent}` : 'none'
                                             }}
                                         />
                                     </span>
                                 </motion.button>
                             )
                         })}
-
-                        {/* Lower Spacer for Center Alignment */}
-                        <div className="h-[140px] shrink-0" />
                     </motion.div>
                 </div>
             </div>
