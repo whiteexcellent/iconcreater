@@ -58,32 +58,36 @@ export function Sidebar({ themes }) {
                 <p className="text-sm text-white/40 mt-2 font-medium tracking-wide">Premium SVG Assets</p>
             </div>
 
-            <div className="flex-1 py-4 space-y-1 overflow-hidden flex flex-col">
-                {/* Visual Hint for Spotlight Search */}
-                <div className="px-5 mb-6">
+            <div className="flex-1 py-6 space-y-1 overflow-hidden flex flex-col">
+                {/* Minimalist Spotlight Search */}
+                <div className="px-6 mb-8">
                     <button
                         onClick={() => {
                             playClickSound();
                             window.dispatchEvent(new CustomEvent('OPEN_SPOTLIGHT'));
                         }}
-                        className="w-full bg-black/40 hover:bg-black/60 border border-white/10 hover:border-white/20 transition-colors rounded-xl p-3 flex items-center justify-between text-white/50 group"
+                        className="w-full bg-white/[0.03] hover:bg-white/[0.08] transition-all duration-300 rounded-2xl p-3.5 flex items-center justify-between text-white/40 group border border-transparent hover:border-white/10"
                     >
-                        <div className="flex items-center gap-2">
-                            <Search size={16} className="text-white/40 group-hover:text-white/70 transition-colors" />
-                            <span className="text-sm font-medium">Search Icons...</span>
+                        <div className="flex items-center gap-3">
+                            <Search size={16} className="text-white/30 group-hover:text-white/70 transition-colors duration-300" />
+                            <span className="text-[13px] font-medium tracking-wide">Search Icons...</span>
                         </div>
-                        <div className="flex items-center gap-1">
-                            <kbd className="px-2 py-1 rounded bg-white/10 text-[10px] font-sans font-semibold text-white/60">⌘</kbd>
-                            <kbd className="px-2 py-1 rounded bg-white/10 text-[10px] font-sans font-semibold text-white/60">K</kbd>
+                        <div className="flex items-center gap-1 opacity-50 group-hover:opacity-100 transition-opacity">
+                            <kbd className="px-1.5 py-0.5 rounded-md bg-white/10 text-[10px] font-sans font-bold text-white/60">⌘</kbd>
+                            <kbd className="px-1.5 py-0.5 rounded-md bg-white/10 text-[10px] font-sans font-bold text-white/60">K</kbd>
                         </div>
                     </button>
                 </div>
 
-                <div className="px-5 mb-4 text-xs font-semibold uppercase tracking-wider text-white/40">
-                    Art Engines
+                <div className="px-6 mb-3 flex items-center gap-3">
+                    <div className="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent flex-1" />
+                    <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/30">
+                        Art Engines
+                    </span>
+                    <div className="h-px bg-gradient-to-r from-white/10 via-transparent to-transparent flex-1" />
                 </div>
 
-                <div className="flex-1 overflow-y-auto px-3 pb-8 scrollbar-hide">
+                <div className="flex-1 overflow-y-auto px-4 pb-8 custom-scrollbar">
                     <motion.div
                         variants={containerVariants}
                         initial="hidden"
@@ -100,25 +104,29 @@ export function Sidebar({ themes }) {
                                         playClickSound();
                                         setActiveTheme(theme);
                                     }}
-                                    className={`w-full text-left px-4 py-3.5 rounded-2xl text-sm relative transition-colors duration-300 z-10 ${theme.id === activeTheme.id
+                                    className={`w-full text-left px-4 py-3.5 rounded-2xl text-[13px] relative transition-all duration-300 z-10 flex items-center justify-between group ${theme.id === activeTheme.id
                                         ? 'text-white font-semibold tracking-wide'
-                                        : 'text-white/40 hover:text-white hover:bg-white-[0.02] font-medium tracking-wide'
+                                        : 'text-white/40 hover:text-white/90 hover:bg-white/[0.03] font-medium tracking-wide'
                                         }`}
                                 >
                                     {/* The Physical Background Tab that smoothly animates between active items */}
                                     {theme.id === activeTheme.id && (
                                         <motion.div
                                             layoutId="activeTab"
-                                            className="absolute inset-0 bg-white/10 rounded-2xl border border-white/10"
-                                            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                                            className="absolute inset-0 bg-white/[0.08] rounded-2xl border border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)]"
+                                            transition={{ type: "spring", stiffness: 350, damping: 35 }}
                                         />
                                     )}
-                                    <span className="relative z-20 flex items-center justify-between">
+                                    <span className="relative z-20 flex flex-col">
                                         {theme.name}
-                                        {/* Small colored dot to indicate theme accent */}
-                                        <span
-                                            className="w-2.5 h-2.5 rounded-full"
-                                            style={{ backgroundColor: theme.colors.accent, boxShadow: `0 0 12px ${theme.colors.accent}` }}
+                                    </span>
+                                    <span className="relative z-20 flex items-center justify-center">
+                                        <div
+                                            className={`w-2.5 h-2.5 rounded-full transition-all duration-500 ${theme.id === activeTheme.id ? 'scale-100 opacity-100' : 'scale-50 opacity-30 group-hover:scale-75 group-hover:opacity-70'}`}
+                                            style={{
+                                                backgroundColor: theme.colors.accent,
+                                                boxShadow: theme.id === activeTheme.id ? `0 0 12px ${theme.colors.accent}` : 'none'
+                                            }}
                                         />
                                     </span>
                                 </motion.button>
@@ -132,10 +140,11 @@ export function Sidebar({ themes }) {
                 <BatchExportButton themes={themes} />
             </div>
 
-            <div className="p-8 relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent pointer-events-none" />
-                <div className="relative z-10 text-xs text-white/30 font-medium tracking-wide leading-relaxed text-center">
-                    SVG Paths are manually crafted,<br />not generated.
+            <div className="p-6 relative overflow-hidden flex flex-col items-center justify-center">
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent pointer-events-none" />
+                <div className="w-12 h-1 bg-white/10 rounded-full mb-4 relative z-10" />
+                <div className="relative z-10 text-[10px] text-white/30 font-medium tracking-wider uppercase leading-relaxed text-center">
+                    Handcrafted Vectors
                 </div>
             </div>
         </div>
