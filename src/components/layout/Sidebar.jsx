@@ -106,7 +106,12 @@ export function Sidebar({ themes }) {
                 </motion.div>
             </div>
 
-            <div className="p-8 mt-auto relative overflow-hidden">
+            <div className="border-t border-white/5 p-4 flex flex-col gap-4 relative z-20 bg-black/40 backdrop-blur-md">
+                <EngineBuilder />
+                <BatchExportButton themes={themes} />
+            </div>
+
+            <div className="p-8 relative overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent pointer-events-none" />
                 <div className="relative z-10 text-xs text-white/30 font-medium tracking-wide leading-relaxed text-center">
                     SVG Paths are manually crafted,<br />not generated.
