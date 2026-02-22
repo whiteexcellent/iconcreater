@@ -1,7 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useTheme } from '../../context/ThemeContext';
-import { EngineBuilder } from '../studio/EngineBuilder';
 import { BatchExportButton } from '../studio/BatchExportButton';
 import { playClickSound, playHoverSound } from '../../utils/audio';
 import { Search } from 'lucide-react';
@@ -130,7 +129,6 @@ export function Sidebar({ themes }) {
             </div>
 
             <div className="border-t border-white/5 p-4 flex flex-col gap-4 relative z-20 bg-black/40 backdrop-blur-md">
-                <EngineBuilder />
                 <BatchExportButton themes={themes} />
             </div>
 

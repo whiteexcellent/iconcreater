@@ -106,8 +106,6 @@ function PreviewModal({ app, theme, onClose, rawSvg }) {
                     {/* Floating Zoomable Container */}
                     <motion.div
                         className="flex-1 flex items-center justify-center w-full overflow-hidden mb-6 z-10"
-                        animate={{ y: [0, -10, 0] }}
-                        transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
                     >
                         <div
                             className="drop-shadow-2xl transition-transform duration-200 w-full h-full"
