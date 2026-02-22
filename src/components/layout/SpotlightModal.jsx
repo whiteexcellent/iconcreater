@@ -113,7 +113,7 @@ export function SpotlightModal({ onSelectApp }) {
                             }}
                             onKeyDown={handleKeyDown}
                         />
-                        <div className="flex items-center gap-1 text-xs text-white/30 font-mono bg-white/5 px-2 py-1 rounded-md">
+                        <div className="hidden md:flex items-center gap-1 text-xs text-white/30 font-mono bg-white/5 px-2 py-1 rounded-md">
                             <Command size={12} /> K
                         </div>
                     </div>

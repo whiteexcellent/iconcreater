@@ -38,8 +38,8 @@ export function Sidebar({ themes }) {
     }, [activeIndex]);
 
     return (
-        <div className="w-full md:w-[320px] flex flex-col h-auto md:h-[calc(100vh-32px)] md:my-4 md:ml-4 rounded-b-3xl md:rounded-[32px] bg-[#050505]/60 md:border border-b border-white/[0.04] backdrop-blur-[80px] shrink-0 z-50 shadow-[0_20px_80px_rgba(0,0,0,0.8)] relative overflow-hidden transition-all duration-500">
-            <div className="p-6 md:p-8 pb-4 md:pb-6 flex items-center justify-between">
+        <div className="w-full md:w-[320px] flex flex-col h-auto md:h-[calc(100vh-32px)] md:my-4 md:ml-4 rounded-b-[24px] md:rounded-[32px] bg-[#050505]/80 md:bg-[#050505]/60 md:border border-b border-white/[0.04] backdrop-blur-[40px] md:backdrop-blur-[80px] shrink-0 z-50 shadow-2xl md:shadow-[0_20px_80px_rgba(0,0,0,0.8)] relative overflow-hidden transition-all duration-500">
+            <div className="p-4 md:p-8 pb-2 md:pb-6 flex items-center justify-between">
                 <div>
                     <h2 className="text-xl md:text-2xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-br from-white to-white/60 flex items-center gap-3">
                         <svg className="w-8 h-8 md:w-10 md:h-10 drop-shadow-[0_0_12px_rgba(168,85,247,0.6)]" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -72,11 +72,21 @@ export function Sidebar({ themes }) {
                     </h2>
                     <p className="text-[11px] md:text-sm text-white/40 mt-1 md:mt-2 font-medium tracking-wide hidden md:block">Premium SVG Assets</p>
                 </div>
+                {/* Mobile Search Icon */}
+                <button
+                    onClick={() => {
+                        playClickSound();
+                        window.dispatchEvent(new CustomEvent('OPEN_SPOTLIGHT'));
+                    }}
+                    className="md:hidden p-2.5 rounded-full bg-white/[0.05] border border-white/10 text-white/60 hover:text-white"
+                >
+                    <Search size={18} />
+                </button>
             </div>
 
-            <div className="flex-1 py-6 space-y-1 overflow-hidden flex flex-col">
-                {/* Minimalist Spotlight Search */}
-                <div className="px-6 mb-8">
+            <div className="flex-1 py-2 md:py-6 space-y-1 overflow-hidden flex flex-col">
+                {/* Minimalist Spotlight Search - Desktop Only */}
+                <div className="px-6 mb-8 hidden md:block">
                     <button
                         onClick={() => {
                             playClickSound();
@@ -95,7 +105,7 @@ export function Sidebar({ themes }) {
                     </button>
                 </div>
 
-                <div className="px-6 mb-3 flex items-center gap-3">
+                <div className="px-6 mb-3 hidden md:flex items-center gap-3">
                     <div className="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent flex-1" />
                     <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/30">
                         Art Engines
@@ -105,7 +115,7 @@ export function Sidebar({ themes }) {
 
                 <div
                     ref={scrollRef}
-                    className="flex-none md:flex-1 w-full overflow-x-auto md:overflow-y-auto px-6 md:px-4 pb-4 md:pb-8 custom-scrollbar snap-x md:snap-y snap-mandatory relative"
+                    className="flex-none md:flex-1 w-full overflow-x-auto md:overflow-y-auto px-4 md:px-4 pb-4 md:pb-8 custom-scrollbar snap-x md:snap-y snap-mandatory relative"
                 >
                     <motion.div
                         variants={containerVariants}
@@ -124,9 +134,9 @@ export function Sidebar({ themes }) {
                                         playClickSound();
                                         setActiveTheme(theme);
                                     }}
-                                    className={`w-[200px] md:w-full flex-none text-left px-5 py-4 rounded-[20px] text-[13px] relative transition-all duration-300 z-10 flex items-center justify-between group snap-center border border-transparent ${theme.id === activeTheme.id
-                                        ? 'text-white font-semibold tracking-wide border-white/10 shadow-2xl'
-                                        : 'text-white/40 hover:text-white/90 hover:bg-white/[0.02] font-medium tracking-wide hover:border-white/5'
+                                    className={`w-max md:w-full flex-none text-left px-5 md:px-5 py-3 md:py-4 rounded-full md:rounded-[20px] text-[12px] md:text-[13px] relative transition-all duration-300 z-10 flex items-center justify-between gap-4 md:gap-0 group snap-center border border-transparent ${theme.id === activeTheme.id
+                                        ? 'text-white font-semibold tracking-wide border-white/10 shadow-lg md:shadow-2xl bg-white/[0.08] md:bg-transparent'
+                                        : 'text-white/50 hover:text-white/90 hover:bg-white/[0.04] md:hover:bg-white/[0.02] font-medium tracking-wide hover:border-white/5 bg-white/[0.02] md:bg-transparent'
                                         }`}
                                 >
                                     {/* The Physical Background Tab that smoothly animates between active items */}
@@ -156,11 +166,11 @@ export function Sidebar({ themes }) {
                 </div>
             </div>
 
-            <div className="border-t border-white/[0.04] p-2 flex flex-col gap-4 relative z-20 bg-transparent mb-1">
+            <div className="border-t border-white/[0.04] p-2 flex-col gap-4 relative z-20 bg-transparent mb-1 hidden md:flex">
                 <BatchExportButton themes={themes} />
             </div>
 
-            <div className="p-5 relative overflow-hidden flex flex-col items-center justify-center">
+            <div className="p-5 relative overflow-hidden flex-col items-center justify-center hidden md:flex">
                 <div className="w-8 h-[2px] bg-white-[0.05] rounded-full mb-3 relative z-10" />
                 <div className="relative z-10 text-[9px] text-white/20 font-bold tracking-[0.2em] uppercase text-center opacity-60">
                     Handcrafted Vectors

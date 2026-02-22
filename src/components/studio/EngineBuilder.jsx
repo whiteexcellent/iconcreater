@@ -15,7 +15,7 @@ export function EngineBuilder() {
     };
 
     return (
-        <div className="w-72 flex flex-col h-full bg-black/20 border-l border-white-[0.02] backdrop-blur-[40px] shrink-0 z-20 shadow-[0_0_40px_rgba(0,0,0,0.5)] right-0 absolute md:static top-0 bottom-0">
+        <div className="hidden lg:flex w-72 flex-col h-full bg-black/20 border-l border-white-[0.02] backdrop-blur-[40px] shrink-0 z-20 shadow-[0_0_40px_rgba(0,0,0,0.5)] right-0 relative top-0 bottom-0">
             <div className="p-8 pb-6 flex items-center justify-between border-b border-white/5">
                 <h2 className="text-sm font-semibold text-white/70 uppercase tracking-widest flex items-center gap-2">
                     <Settings2 size={16} />

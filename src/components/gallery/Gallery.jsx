@@ -84,11 +84,11 @@ function PreviewModal({ app, theme, onClose, rawSvg }) {
                 initial="hidden"
                 animate="visible"
                 exit="exit"
-                className="w-full max-w-4xl bg-white/5 backdrop-blur-2xl border border-white/10 rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row relative"
+                className="w-full max-w-4xl max-h-[95vh] overflow-y-auto md:overflow-hidden bg-white/5 backdrop-blur-2xl border border-white/10 rounded-[24px] md:rounded-3xl shadow-2xl flex flex-col md:flex-row relative"
                 onClick={e => e.stopPropagation()}
             >
                 {/* Left Side: Large Preview with Zoom Controls */}
-                <div className={`w-full md:w-5/12 p-8 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-white/5 relative min-h-[300px] ${previewBg} overflow-hidden`}>
+                <div className={`w-full md:w-5/12 p-6 md:p-8 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-white/5 relative min-h-[350px] md:min-h-[400px] shrink-0 ${previewBg} overflow-hidden`}>
 
                     {/* Ambient Modal Glow behind SVG */}
                     <div
@@ -136,7 +136,7 @@ function PreviewModal({ app, theme, onClose, rawSvg }) {
                 </div>
 
                 {/* Right Side: Code & Actions */}
-                <div className="w-full md:w-7/12 p-8 flex flex-col relative h-[500px] bg-[#0A0A0A]">
+                <div className="w-full md:w-7/12 p-6 md:p-8 flex flex-col relative min-h-[450px] md:min-h-[500px] bg-[#0A0A0A] shrink-0">
                     <button
                         onClick={onClose}
                         className="absolute top-4 right-4 p-2 rounded-full text-white/30 hover:text-white hover:bg-white/10 transition-colors hidden md:block"
