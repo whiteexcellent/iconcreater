@@ -35,13 +35,13 @@ function App() {
       </AnimatePresence>
 
       {/* Full-bleed Spatial Shell */}
-      <div className="w-full h-full flex relative z-10 bg-white/[0.01] backdrop-blur-2xl border-white/5">
+      <div className="w-full h-full flex flex-col md:flex-row relative z-10 bg-white/[0.01] backdrop-blur-2xl border-[0px] md:border-white/5">
 
         {/* Sidebar for Themes */}
         <Sidebar themes={THEMES} />
 
         {/* Main Gallery Area */}
-        <main className="flex-1 overflow-y-auto relative z-10 scrollbar-hide py-16 px-12 lg:px-24">
+        <main className="flex-1 overflow-y-auto relative z-10 scrollbar-hide py-8 md:py-16 px-6 md:px-12 lg:px-24">
           <div className="max-w-screen-2xl mx-auto relative z-10">
             <header className="mb-20 relative z-20">
               <motion.h1
@@ -57,7 +57,7 @@ function App() {
                   duration: 0.8,
                   ease: "easeOut"
                 }}
-                className="text-6xl font-black tracking-tighter mb-4 text-transparent bg-clip-text bg-gradient-to-br from-white to-white/60 drop-shadow-xl"
+                className="text-4xl md:text-6xl font-black tracking-tighter mb-4 text-transparent bg-clip-text bg-gradient-to-br from-white to-white/60 drop-shadow-xl"
               >
                 {activeTheme.name}
               </motion.h1>

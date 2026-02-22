@@ -23,8 +23,10 @@ export function Sidebar({ themes }) {
         show: { opacity: 1, x: 0 }
     };
 
+    const activeIndex = themes.findIndex(t => t.id === activeTheme.id);
+
     return (
-        <div className="w-[320px] flex flex-col h-[calc(100vh-32px)] my-4 ml-4 rounded-[32px] bg-[#050505]/60 border border-white/[0.04] backdrop-blur-[80px] shrink-0 z-50 shadow-[0_20px_80px_rgba(0,0,0,0.8)] relative overflow-hidden">
+        <div className="w-full md:w-[320px] flex flex-col h-[400px] md:h-[calc(100vh-32px)] md:my-4 md:ml-4 rounded-b-[40px] md:rounded-[32px] bg-[#050505]/60 border-b md:border-t-0 md:border border-white/[0.04] backdrop-blur-[80px] shrink-0 z-50 shadow-[0_20px_80px_rgba(0,0,0,0.8)] relative overflow-hidden transition-all duration-500">
             <div className="p-8 pb-6">
                 <h2 className="text-2xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-br from-white to-white/60 flex items-center gap-3">
                     <svg className="w-10 h-10 drop-shadow-[0_0_12px_rgba(168,85,247,0.6)]" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -87,18 +89,36 @@ export function Sidebar({ themes }) {
                     <div className="h-px bg-gradient-to-r from-white/10 via-transparent to-transparent flex-1" />
                 </div>
 
-                <div className="flex-1 overflow-y-auto px-4 pb-8 custom-scrollbar">
+                <div className="flex-1 overflow-y-auto px-4 pb-8 custom-scrollbar" style={{ perspective: '800px' }}>
                     <motion.div
                         variants={containerVariants}
                         initial="hidden"
                         animate="show"
-                        className="flex flex-col space-y-1"
+                        className="flex flex-col space-y-4 py-8"
+                        style={{ transformStyle: 'preserve-3d' }}
                     >
-                        {themes.map(theme => {
+                        {themes.map((theme, index) => {
+                            const distance = index - activeIndex;
+                            const absDistance = Math.abs(distance);
+
+                            // 3D Rotary Math
+                            const scale = Math.max(0.7, 1 - (absDistance * 0.15));
+                            const opacity = Math.max(0.15, 1 - (absDistance * 0.3));
+                            const rotateX = distance * -20; // 20deg tilt per step
+                            const yOffset = distance * -15; // Fan out densely
+
                             return (
                                 <motion.button
                                     key={theme.id}
                                     variants={itemVariants}
+                                    animate={{
+                                        scale,
+                                        opacity,
+                                        rotateX,
+                                        y: yOffset
+                                    }}
+                                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                                    style={{ transformOrigin: 'center center' }}
                                     onMouseEnter={playHoverSound}
                                     onClick={() => {
                                         playClickSound();
