@@ -4,6 +4,7 @@ import { useTheme } from '../../context/ThemeContext';
 import { EngineBuilder } from '../studio/EngineBuilder';
 import { BatchExportButton } from '../studio/BatchExportButton';
 import { playClickSound, playHoverSound } from '../../utils/audio';
+import { Search } from 'lucide-react';
 
 export function Sidebar({ themes }) {
     const { activeTheme, setActiveTheme } = useTheme();
@@ -59,6 +60,23 @@ export function Sidebar({ themes }) {
             </div>
 
             <div className="flex-1 py-4 px-3 space-y-1">
+                {/* Visual Hint for Spotlight Search */}
+                <div className="px-2 mb-6">
+                    <button
+                        onClick={() => document.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', metaKey: true, ctrlKey: true }))}
+                        className="w-full bg-black/40 hover:bg-black/60 border border-white/10 hover:border-white/20 transition-colors rounded-xl p-3 flex items-center justify-between text-white/50 group"
+                    >
+                        <div className="flex items-center gap-2">
+                            <Search size={16} className="text-white/40 group-hover:text-white/70 transition-colors" />
+                            <span className="text-sm font-medium">Search Icons...</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                            <kbd className="px-2 py-1 rounded bg-white/10 text-[10px] font-sans font-semibold text-white/60">⌘</kbd>
+                            <kbd className="px-2 py-1 rounded bg-white/10 text-[10px] font-sans font-semibold text-white/60">K</kbd>
+                        </div>
+                    </button>
+                </div>
+
                 <div className="px-3 mb-4 text-xs font-semibold uppercase tracking-wider text-white/40">
                     Art Engines
                 </div>

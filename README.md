@@ -1,16 +1,38 @@
-# React + Vite
+# FiveM Icon Studio
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+![FiveM Studio](https://img.shields.io/badge/FiveM-Icon_Studio-6366F1?style=for-the-badge)
 
-Currently, two official plugins are available:
+FiveM Icon Studio is an advanced, production-grade web application tailored for FiveM server developers to visually engineer, preview, and batch-export premium SVG UI assets for in-game smartphones (like qs-smartphone, qb-phone, etc.).
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Features
 
-## React Compiler
+- **Advanced Art Engines**: Generate highly complex, CSS-driven SVG icons across 11 distinct aesthetic languages (Kawaii, Neo Brutalism, iOS Glass, Liquid Chrome, Carbon Tactical, Vice City, Vision OS, E-Commerce Minimal, etc.).
+- **Spotlight Search (`Cmd/Ctrl + K`)**: Instantly fuzzy-search across dozens of application mappings and active themes with a native Command Palette.
+- **Custom Engine Builder**: Dynamically override primary, secondary, and accent colors, as well as corner radius and glassmorphism blur intensities globally in real-time.
+- **Framer Motion 3D Physics**: Hardware-accelerated `useMouseTilt` parallax grid effects tracking precise `clientX/Y` physics.
+- **Web Audio Haptics**: Procedurally generated synthetic oscillators to emit deep navigational thuds and high-pitch hover ticks without heavy `.mp3` dependencies.
+- **Batch Export Pipeline**: Instantly compile, zip, and download all 33 variations of an active theme to local storage.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Usage
 
-## Expanding the ESLint configuration
+1. Select a theme from the left **Sidebar**.
+2. Customize the theme limits using the **Engine Builder** controls.
+3. Click any application icon to preview the raw SVG output in the **Modal**.
+4. Press **Search Icons...** or `Cmd/Ctrl + K` to rapidly filter through the grid.
+5. Click **Copy SVG Document** to extract the heavily styled geometry, or **Batch Export ZIP** to download the whole pack.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Technology Stack
+
+- React 18
+- Vite
+- Framer Motion
+- TailwindCSS v3
+- Lucide React
+- Web Audio API
+
+## Installation
+
+```bash
+npm install
+npm run dev
+```

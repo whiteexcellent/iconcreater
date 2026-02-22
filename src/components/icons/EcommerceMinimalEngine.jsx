@@ -1,4 +1,5 @@
 import React from 'react';
+import { GEOMETRY_BANK } from '../../utils/geometryBank';
 
 // E-Commerce Minimal Engine provides a Stripe/Vercel inspired pristine aesthetic
 // Pure monochrome, extreme sharp precision, 1px sophisticated vector strokes.
@@ -50,6 +51,21 @@ export const ECOMMERCE_SVG_DICTIONARY = {
   <circle cx="100" cy="70" r="3" fill="#6366f1" />
 </svg>`
 };
+
+Object.keys(GEOMETRY_BANK).forEach(id => {
+    if (!ECOMMERCE_SVG_DICTIONARY[id]) {
+        ECOMMERCE_SVG_DICTIONARY[id] = `
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect x="8" y="8" width="184" height="184" rx="20" fill="#ffffff" stroke="#e5e7eb" stroke-width="1" />
+  <rect x="16" y="16" width="168" height="168" rx="16" fill="#f9fafb" />
+  
+  <g fill="none" stroke="#111827" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+    ${GEOMETRY_BANK[id]}
+  </g>
+  <circle cx="140" cy="85" r="4" fill="#6366f1" />
+</svg>`;
+    }
+});
 
 const EcommercePlaceholder = ({ id }) => (
     <svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">

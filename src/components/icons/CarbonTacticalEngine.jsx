@@ -1,4 +1,5 @@
 import React from 'react';
+import { GEOMETRY_BANK } from '../../utils/geometryBank';
 
 // Carbon Tactical engine provides military/diagnostic HUD aesthetics
 // Uses dark olive/blacks, dashed borders, technical crosshairs, and monospaced text diagnostics
@@ -85,6 +86,21 @@ export const CARBON_SVG_DICTIONARY = {
   <circle cx="120" cy="90" r="14" fill="none" stroke="#f97316" stroke-width="1.5" stroke-dasharray="4 2" />
 </svg>`
 };
+
+Object.keys(GEOMETRY_BANK).forEach(id => {
+    if (!CARBON_SVG_DICTIONARY[id]) {
+        CARBON_SVG_DICTIONARY[id] = `
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect x="5" y="5" width="190" height="190" fill="#0A0E0B" />
+  <rect x="10" y="10" width="180" height="180" fill="none" stroke="#4ade80" stroke-width="1.5" stroke-dasharray="8 4" opacity="0.4" />
+  <path d="M 5 20 L 20 5 M 195 20 L 180 5 M 5 180 L 20 195 M 195 180 L 180 195" stroke="#f97316" stroke-width="2" opacity="0.8" />
+  <text x="15" y="25" fill="#4ade80" font-family="monospace" font-size="8" opacity="0.5">SYS: ${id.substring(0, 8).toUpperCase()}</text>
+  <g stroke="#4ade80" stroke-width="4" stroke-linejoin="miter" stroke-linecap="square" fill="none">
+    ${GEOMETRY_BANK[id]}
+  </g>
+</svg>`;
+    }
+});
 
 const CarbonTacticalPlaceholder = ({ id }) => (
     <svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">

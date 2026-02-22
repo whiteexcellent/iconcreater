@@ -1,4 +1,5 @@
 import React from 'react';
+import { GEOMETRY_BANK } from '../../utils/geometryBank';
 
 // Vice City Engine provides an 80s Synthwave / Outrun aesthetic
 // Deep purples, hot pinks, cyan glowing borders, and horizontal scanlines
@@ -210,6 +211,52 @@ export const VICECITY_SVG_DICTIONARY = {
   <path d="M 100 135 C 100 135 60 95 60 70 C 60 45 100 45 100 70 C 100 45 140 45 140 70 C 140 95 100 135 100 135 Z" fill="#ffffff" filter="url(#vice-glow-cyan)" />
 </svg>`
 };
+
+Object.keys(GEOMETRY_BANK).forEach(id => {
+  if (!VICECITY_SVG_DICTIONARY[id]) {
+    VICECITY_SVG_DICTIONARY[id] = `
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="vice-bg" x1="0" y1="0" x2="0" y2="200" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#120428" />
+      <stop offset="100%" stop-color="#2a0b59" />
+    </linearGradient>
+    <linearGradient id="vice-sunset" x1="0" y1="40" x2="0" y2="160" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#ff007f" />
+      <stop offset="50%" stop-color="#ff007f" />
+      <stop offset="50.1%" stop-color="#ff7f00" />
+      <stop offset="100%" stop-color="#ff7f00" />
+    </linearGradient>
+    <pattern id="vice-scanlines" width="4" height="4" patternUnits="userSpaceOnUse">
+      <line x1="0" y1="0" x2="4" y2="0" stroke="#ffffff" stroke-width="0.5" opacity="0.08" />
+    </pattern>
+    <filter id="vice-glow-cyan" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="6" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+  </defs>
+
+  <rect width="200" height="200" rx="40" fill="url(#vice-bg)" />
+  <rect width="200" height="200" rx="40" fill="url(#vice-scanlines)" />
+
+  <rect x="8" y="8" width="184" height="184" rx="32" fill="none" stroke="#f0148b" stroke-width="2" opacity="0.6" />
+  <rect x="4" y="4" width="192" height="192" rx="36" fill="none" stroke="#06b6d4" stroke-width="3" filter="url(#vice-glow-cyan)" />
+
+  <circle cx="100" cy="100" r="60" fill="url(#vice-sunset)" />
+  <line x1="40" y1="110" x2="160" y2="110" stroke="#120428" stroke-width="4" />
+  <line x1="45" y1="125" x2="155" y2="125" stroke="#120428" stroke-width="6" />
+  <line x1="55" y1="140" x2="145" y2="140" stroke="#120428" stroke-width="8" />
+
+  <g fill="none" stroke="#ffffff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" filter="url(#vice-glow-cyan)">
+    ${GEOMETRY_BANK[id]}
+  </g>
+</svg>`;
+  }
+});
 
 const ViceCityPlaceholder = ({ id }) => (
   <svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
