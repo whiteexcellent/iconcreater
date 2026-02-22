@@ -59,11 +59,14 @@ export function Sidebar({ themes }) {
                 <p className="text-sm text-white/40 mt-2 font-medium tracking-wide">Premium SVG Assets</p>
             </div>
 
-            <div className="flex-1 py-4 px-3 space-y-1">
+            <div className="flex-1 py-4 space-y-1 overflow-hidden flex flex-col">
                 {/* Visual Hint for Spotlight Search */}
-                <div className="px-2 mb-6">
+                <div className="px-5 mb-6">
                     <button
-                        onClick={() => document.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', metaKey: true, ctrlKey: true }))}
+                        onClick={() => {
+                            playClickSound();
+                            window.dispatchEvent(new CustomEvent('OPEN_SPOTLIGHT'));
+                        }}
                         className="w-full bg-black/40 hover:bg-black/60 border border-white/10 hover:border-white/20 transition-colors rounded-xl p-3 flex items-center justify-between text-white/50 group"
                     >
                         <div className="flex items-center gap-2">
@@ -77,51 +80,53 @@ export function Sidebar({ themes }) {
                     </button>
                 </div>
 
-                <div className="px-3 mb-4 text-xs font-semibold uppercase tracking-wider text-white/40">
+                <div className="px-5 mb-4 text-xs font-semibold uppercase tracking-wider text-white/40">
                     Art Engines
                 </div>
 
-                <motion.div
-                    variants={containerVariants}
-                    initial="hidden"
-                    animate="show"
-                    className="flex flex-col space-y-1"
-                >
-                    {themes.map(theme => {
-                        return (
-                            <motion.button
-                                key={theme.id}
-                                variants={itemVariants}
-                                onMouseEnter={playHoverSound}
-                                onClick={() => {
-                                    playClickSound();
-                                    setActiveTheme(theme);
-                                }}
-                                className={`w-full text-left px-4 py-3.5 rounded-2xl text-sm relative transition-colors duration-300 z-10 ${theme.id === activeTheme.id
-                                    ? 'text-white font-semibold tracking-wide'
-                                    : 'text-white/40 hover:text-white hover:bg-white-[0.02] font-medium tracking-wide'
-                                    }`}
-                            >
-                                {/* The Physical Background Tab that smoothly animates between active items */}
-                                {theme.id === activeTheme.id && (
-                                    <motion.div
-                                        layoutId="activeTab"
-                                        className="absolute inset-0 bg-white/10 rounded-2xl border border-white/10"
-                                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                                    />
-                                )}
-                                <span className="relative z-20 flex items-center justify-between">
-                                    {theme.name}
-                                    {/* Small colored dot to indicate theme accent */}
-                                    <span
-                                        className="w-2.5 h-2.5 rounded-full"
-                                        style={{ backgroundColor: theme.colors.accent, boxShadow: `0 0 12px ${theme.colors.accent}` }}
-                                    />
-                                </span>
-                            </motion.button>
-                        )
-                    })}
-                </motion.div>
+                <div className="flex-1 overflow-y-auto px-3 pb-8 scrollbar-hide">
+                    <motion.div
+                        variants={containerVariants}
+                        initial="hidden"
+                        animate="show"
+                        className="flex flex-col space-y-1"
+                    >
+                        {themes.map(theme => {
+                            return (
+                                <motion.button
+                                    key={theme.id}
+                                    variants={itemVariants}
+                                    onMouseEnter={playHoverSound}
+                                    onClick={() => {
+                                        playClickSound();
+                                        setActiveTheme(theme);
+                                    }}
+                                    className={`w-full text-left px-4 py-3.5 rounded-2xl text-sm relative transition-colors duration-300 z-10 ${theme.id === activeTheme.id
+                                        ? 'text-white font-semibold tracking-wide'
+                                        : 'text-white/40 hover:text-white hover:bg-white-[0.02] font-medium tracking-wide'
+                                        }`}
+                                >
+                                    {/* The Physical Background Tab that smoothly animates between active items */}
+                                    {theme.id === activeTheme.id && (
+                                        <motion.div
+                                            layoutId="activeTab"
+                                            className="absolute inset-0 bg-white/10 rounded-2xl border border-white/10"
+                                            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                                        />
+                                    )}
+                                    <span className="relative z-20 flex items-center justify-between">
+                                        {theme.name}
+                                        {/* Small colored dot to indicate theme accent */}
+                                        <span
+                                            className="w-2.5 h-2.5 rounded-full"
+                                            style={{ backgroundColor: theme.colors.accent, boxShadow: `0 0 12px ${theme.colors.accent}` }}
+                                        />
+                                    </span>
+                                </motion.button>
+                            )
+                        })}
+                    </motion.div>
+                </div>
             </div>
 
             <div className="border-t border-white/5 p-4 flex flex-col gap-4 relative z-20 bg-black/40 backdrop-blur-md">

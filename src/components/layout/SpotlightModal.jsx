@@ -24,8 +24,19 @@ export function SpotlightModal({ onSelectApp }) {
             }
         };
 
+        const handleCustomOpen = () => {
+            setIsOpen(true);
+            setQuery('');
+            setSelectedIndex(0);
+        };
+
         window.addEventListener('keydown', handleKeyDown);
-        return () => window.removeEventListener('keydown', handleKeyDown);
+        window.addEventListener('OPEN_SPOTLIGHT', handleCustomOpen);
+
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+            window.removeEventListener('OPEN_SPOTLIGHT', handleCustomOpen);
+        };
     }, []);
 
     useEffect(() => {
