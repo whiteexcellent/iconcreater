@@ -1,7 +1,12 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { useTheme } from '../../context/ThemeContext';
+import { EngineBuilder } from '../studio/EngineBuilder';
+import { BatchExportButton } from '../studio/BatchExportButton';
+import { playClickSound, playHoverSound } from '../../utils/audio';
 
-export function Sidebar({ themes, activeTheme, onSelectTheme }) {
+export function Sidebar({ themes }) {
+    const { activeTheme, setActiveTheme } = useTheme();
     // Animation variants for the staggered list
     const containerVariants = {
         hidden: { opacity: 0 },
@@ -65,23 +70,26 @@ export function Sidebar({ themes, activeTheme, onSelectTheme }) {
                     className="flex flex-col space-y-1"
                 >
                     {themes.map(theme => {
-                        const isActive = activeTheme.id === theme.id;
                         return (
                             <motion.button
                                 key={theme.id}
                                 variants={itemVariants}
-                                onClick={() => onSelectTheme(theme)}
-                                className={`w-full text-left px-4 py-3.5 rounded-2xl text-sm relative transition-colors duration-300 z-10 ${isActive
+                                onMouseEnter={playHoverSound}
+                                onClick={() => {
+                                    playClickSound();
+                                    setActiveTheme(theme);
+                                }}
+                                className={`w-full text-left px-4 py-3.5 rounded-2xl text-sm relative transition-colors duration-300 z-10 ${theme.id === activeTheme.id
                                     ? 'text-white font-semibold tracking-wide'
                                     : 'text-white/40 hover:text-white hover:bg-white-[0.02] font-medium tracking-wide'
                                     }`}
                             >
                                 {/* The Physical Background Tab that smoothly animates between active items */}
-                                {isActive && (
+                                {theme.id === activeTheme.id && (
                                     <motion.div
-                                        layoutId="activeThemeBubble"
-                                        className="absolute inset-0 bg-white/[0.08] backdrop-blur-xl border border-white/10 rounded-2xl -z-10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]"
-                                        transition={{ type: "spring", stiffness: 400, damping: 35 }}
+                                        layoutId="activeTab"
+                                        className="absolute inset-0 bg-white/10 rounded-2xl border border-white/10"
+                                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
                                     />
                                 )}
                                 <span className="relative z-20 flex items-center justify-between">

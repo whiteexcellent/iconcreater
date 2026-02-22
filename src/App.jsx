@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { THEMES, FIVEM_APPS } from './data/icons';
+import { FIVEM_APPS, THEMES } from './data/icons';
 import { Gallery } from './components/gallery/Gallery';
 import { Sidebar } from './components/layout/Sidebar';
+import { useTheme } from './context/ThemeContext';
+import { EngineBuilder } from './components/studio/EngineBuilder';
 
 function App() {
-  const [activeTheme, setActiveTheme] = useState(THEMES[0]);
+  const { activeTheme } = useTheme();
 
   return (
     <div className="flex h-screen w-screen bg-[#020202] text-white overflow-hidden font-sans relative">
@@ -36,11 +38,7 @@ function App() {
       <div className="w-full h-full flex relative z-10 bg-white/[0.01] backdrop-blur-2xl border-white/5">
 
         {/* Sidebar for Themes */}
-        <Sidebar
-          themes={THEMES}
-          activeTheme={activeTheme}
-          onSelectTheme={setActiveTheme}
-        />
+        <Sidebar themes={THEMES} />
 
         {/* Main Gallery Area */}
         <main className="flex-1 overflow-y-auto relative z-10 scrollbar-hide py-16 px-12 lg:px-24">
@@ -90,6 +88,8 @@ function App() {
             <Gallery theme={activeTheme} apps={FIVEM_APPS} />
           </div>
         </main>
+
+        <EngineBuilder />
 
       </div >
     </div >

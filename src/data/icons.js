@@ -74,5 +74,29 @@ export const THEMES = [
         name: 'Liquid Chrome Reality',
         description: 'Molten reflective liquid metal UI. Extreme depth and luxury.',
         colors: { background: '#111111', primary: '#2a2a2a', accent: '#c0c0c0' }
+    },
+    {
+        id: 'carbon-tactical',
+        name: 'Carbon Tactical HUD',
+        description: 'Military diagnostic interface. Dark drabs, bright orange and neon greens.',
+        colors: { background: '#0a0d0b', primary: '#1e2922', accent: '#4ade80' }
+    },
+    {
+        id: 'vice-city',
+        name: 'Vice City Synthwave',
+        description: '80s outrun. Cyan & hot pink borders, deep purple gradients.',
+        colors: { background: '#120428', primary: '#f0148b', accent: '#06b6d4' }
+    },
+    {
+        id: 'vision-day',
+        name: 'Vision OS Day',
+        description: 'Apple Vision Pro aesthetic. Bright frosted glass, extreme shadows, legible high-contrast.',
+        colors: { background: '#ffffff', primary: '#f5f5f7', accent: '#007AFF' }
+    },
+    {
+        id: 'ecommerce-minimal',
+        name: 'E-Commerce Minimal',
+        description: 'Stripe-inspired monochrome perfection. Micro-borders and sharp math.',
+        colors: { background: '#fafafa', primary: '#ffffff', accent: '#171717' }
     }
 ];
