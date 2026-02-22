@@ -1,5 +1,5 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useRef, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '../../context/ThemeContext';
 import { BatchExportButton } from '../studio/BatchExportButton';
 import { playClickSound, playHoverSound } from '../../utils/audio';
@@ -24,6 +24,18 @@ export function Sidebar({ themes }) {
     };
 
     const activeIndex = themes.findIndex(t => t.id === activeTheme.id);
+    const scrollRef = useRef(null);
+    const itemRefs = useRef([]);
+
+    // Automatically scroll the active theme securely into the center of the container
+    useEffect(() => {
+        if (itemRefs.current[activeIndex]) {
+            itemRefs.current[activeIndex].scrollIntoView({
+                behavior: 'smooth',
+                block: 'center'
+            });
+        }
+    }, [activeIndex]);
 
     return (
         <div className="w-full md:w-[320px] flex flex-col h-[400px] md:h-[calc(100vh-32px)] md:my-4 md:ml-4 rounded-b-[40px] md:rounded-[32px] bg-[#050505]/60 border-b md:border-t-0 md:border border-white/[0.04] backdrop-blur-[80px] shrink-0 z-50 shadow-[0_20px_80px_rgba(0,0,0,0.8)] relative overflow-hidden transition-all duration-500">
@@ -89,14 +101,21 @@ export function Sidebar({ themes }) {
                     <div className="h-px bg-gradient-to-r from-white/10 via-transparent to-transparent flex-1" />
                 </div>
 
-                <div className="flex-1 overflow-y-auto px-4 pb-8 custom-scrollbar" style={{ perspective: '800px' }}>
+                <div
+                    ref={scrollRef}
+                    className="flex-1 overflow-y-auto px-4 custom-scrollbar snap-y snap-mandatory relative"
+                    style={{ perspective: '800px' }}
+                >
                     <motion.div
                         variants={containerVariants}
                         initial="hidden"
                         animate="show"
-                        className="flex flex-col space-y-4 py-8"
+                        className="flex flex-col space-y-4"
                         style={{ transformStyle: 'preserve-3d' }}
                     >
+                        {/* Upper Spacer for Center Alignment */}
+                        <div className="h-[140px] shrink-0" />
+
                         {themes.map((theme, index) => {
                             const distance = index - activeIndex;
                             const absDistance = Math.abs(distance);
@@ -110,6 +129,7 @@ export function Sidebar({ themes }) {
                             return (
                                 <motion.button
                                     key={theme.id}
+                                    ref={el => itemRefs.current[index] = el}
                                     variants={itemVariants}
                                     animate={{
                                         scale,
@@ -124,7 +144,7 @@ export function Sidebar({ themes }) {
                                         playClickSound();
                                         setActiveTheme(theme);
                                     }}
-                                    className={`w-full text-left px-4 py-3.5 rounded-2xl text-[13px] relative transition-all duration-300 z-10 flex items-center justify-between group ${theme.id === activeTheme.id
+                                    className={`w-full text-left px-4 py-3.5 rounded-2xl text-[13px] relative transition-all duration-300 z-10 flex items-center justify-between group snap-center ${theme.id === activeTheme.id
                                         ? 'text-white font-semibold tracking-wide'
                                         : 'text-white/40 hover:text-white/90 hover:bg-white/[0.03] font-medium tracking-wide'
                                         }`}
@@ -152,6 +172,9 @@ export function Sidebar({ themes }) {
                                 </motion.button>
                             )
                         })}
+
+                        {/* Lower Spacer for Center Alignment */}
+                        <div className="h-[140px] shrink-0" />
                     </motion.div>
                 </div>
             </div>
